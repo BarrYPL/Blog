@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <title>"> /home$"</title>
+    <link rel="icon" href="images/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <% if @css %>
+      <% @css.each do |style| %>
+        <%= "<link rel=\"stylesheet\" href=\"/css/#{style}.css\">" %>
+      <% end %>
+    <% end %>
+    <% if @js %>
+      <% @js.each do |jscript| %>
+        <%= "<script src=\"/js/#{jscript}.js\"></script>" %>
+      <% end %>
+    <% end %>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <span class="logo">
+          <span class="logo-text">> /$</span>
+          <span class="logo-coursor"></span>
+        </span>
+        <span class="menu__right">
+          <nav class="menu">
+            <ul>
+              <li><a>About Me</a></li>
+              <li><a>Categories</a></li>
+              <li><a>Posts</a></li>
+              <li><a>Tags</a></li>
+            </ul>
+          </nav>
+        <span>
+      </header>
+      <% if @error %>
+        <p class="error"><%= @error %></p>
+      <% end %>
+      <%= yield %>
+      <footer class="branding">
+        <small>&copy; 2022 <strong>BarryPL</strong></small>
+      </footer>
+    </div>
+  </body>
+  </html>

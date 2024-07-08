@@ -1,0 +1,31 @@
+<div>
+  <form action="/preview" method="post">
+    <textarea name="content" id="editor"></textarea>
+    <button type="submit">Podgląd</button>
+  </form>
+</div>
+<script>
+  var easyMDE = new EasyMDE({ element: document.getElementById('editor') });
+
+  async function spellCheck(text) {
+    const response = await fetch('/spellcheck', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ content: text })
+    });
+
+    const data = await response.json();
+    return data.errors;
+  }
+
+  easyMDE.codemirror.on('change', async () => {
+    const text = easyMDE.value();
+    const errors = await spellCheck(text);
+
+    errors.forEach(error => {
+      console.log(`Error: ${error.message} at position ${error.offset}`);
+    });
+  });
+</script>

@@ -1,3 +1,15 @@
+* {
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+html, body {
+  scroll-behavior: smooth;
+  overflow: hidden;
+}
+
 body {
   font-family: "Anonymous Pro", monospace;
 }
@@ -29,4 +41,37 @@ body {
 pre {
     background: #f4f4f4;
     padding: 10px;
+}
+
+a {
+  color: #121212;
+}
+
+.menu li {
+  margin: 0 12px;
+}
+
+.menu ul {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+  font-size: 1rem;
+  list-style: none;
+}
+
+.menu {
+  border-right: 1px solid;
+  margin-right: 15px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  width: 760px;
+  max-width: 100%;
 }

@@ -27,7 +27,8 @@ class MyServer < Sinatra::Base
   set :markdown, Redcarpet::Markdown.new(HTMLWithPygments.new, fenced_code_blocks: true)
 
   get '/' do
-    erb :index
+    @css = ["home-styles"]
+    erb :home
   end
 
   post '/preview' do

@@ -26,7 +26,7 @@
   </head>
   <body>
     <div class="container">
-      <header>
+      <header class="header">
         <span class="logo">
           <span class="logo-text">> /$</span>
           <span class="logo-coursor"></span>
@@ -34,20 +34,20 @@
         <span class="menu__right">
           <nav class="menu">
             <ul>
-              <li><a>About Me</a></li>
-              <li><a>Categories</a></li>
-              <li><a>Posts</a></li>
-              <li><a>Tags</a></li>
+              <li><a href="/about">About Me</a></li>
+              <li><a href="/categories">Categories</a></li>
+              <li><a href="/posts">Posts</a></li>
+              <li><a href="/Tags">Tags</a></li>
             </ul>
           </nav>
-        <span>
+        </span>
       </header>
       <% if @error %>
         <p class="error"><%= @error %></p>
       <% end %>
       <%= yield %>
       <footer class="branding">
-        <small>&copy; 2022 <strong>BarryPL</strong></small>
+        <small>&copy; <%= Time.now.year %> <strong>BarryPL</strong></small>
       </footer>
     </div>
   </body>

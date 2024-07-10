@@ -41,6 +41,10 @@
               <li><a href="/categories">Categories</a></li>
               <li><a href="/posts">Posts</a></li>
               <li><a href="/tags">Tags</a></li>
+              <% if current_user %>
+                <li><a href="/new_post">New Post</a></li>
+                <li><a href="/logout">Logout</a></li>
+              <% end %>
             </ul>
           </nav>
         </span>

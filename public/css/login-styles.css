@@ -1,0 +1,61 @@
+h1 {
+  text-align: center;
+}
+
+.box{
+  display: flex;
+  flex-direction:column;
+  align-items: center;
+}
+
+.login-form {
+  border: solid 2px;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.textbox{
+  display: flex;
+  height: 50px;
+  height: 100%;
+  position: relative;
+}
+
+.textbox input{
+  outline: none;
+  margin: 10px auto;
+  text-align: left;
+  background: #fff;
+  border: solid 1px #afafaf;
+  width: 100%;
+  padding: 5px;
+  border-radius: 0px 10px 10px 0px;
+}
+
+.textbox input::placeholder{
+  color: #676767;
+}
+
+.box input[type = "submit"]{
+  background: #121212;
+  display: block;
+  margin: 20px auto;
+  text-align: center;
+  border: 0;
+  padding: 14px 40px;
+  outline: none;
+  color: #fafafa;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.icon-div {
+    color: #fafafa;
+    background: #121212;
+    padding: 10px 12px 10px 10px;
+    margin: 10px 0px;
+    border-radius: 10px 0px 0px 10px;
+}

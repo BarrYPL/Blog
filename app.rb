@@ -5,9 +5,22 @@ require 'rouge/plugins/redcarpet'
 require 'json'
 require 'net/http'
 require 'uri'
+require 'sequel'
+require 'bcrypt'
+
+DB = Sequel.sqlite 'db/database.db'
+$usersDB = DB[:users]
 
 class HTMLWithPygments < Redcarpet::Render::HTML
   include Rouge::Plugins::Redcarpet
+end
+
+def hash_password(password)
+  BCrypt::Password.create(password).to_s
+end
+
+def test_password(password, hash)
+  BCrypt::Password.new(hash) == password
 end
 
 class MyServer < Sinatra::Base
@@ -51,6 +64,55 @@ class MyServer < Sinatra::Base
     erb :lorem_ipsum
   end
 
+  get '/logout' do
+    session.clear
+    redirect '/'
+  end
+
+  get '/login' do
+    @css = ["login-styles"]
+    erb :login
+  end
+
+  def login_failed
+   session.clear
+   @error = 'Username or password was incorrect.'
+   @css = ["login-styles"]
+   erb :login
+  end
+
+  post '/login' do
+    if params[:username].empty? || params[:password].empty?
+      login_failed
+    end
+
+    if current_user
+      redirect '/'
+    end
+
+    user_found = false
+    $usersDB.each do |user|
+      if params[:username] == user[:username]
+        user_found = true
+        pass_t = user[:password_hash]
+        if test_password(params[:password], pass_t)
+          session.clear
+          session[:user_id] = user[:id]
+          redirect '/'
+        else
+          login_failed
+        end
+      end
+    end
+
+    login_failed unless user_found
+  end
+
+  get '/error' do
+    @css = ["error404-styles"]
+    erb :error404
+  end
+
   post '/preview' do
     markdown_content = params[:content]
     html_content = settings.markdown.render(markdown_content)
@@ -73,6 +135,21 @@ class MyServer < Sinatra::Base
     content_type :json
     { errors: errors }.to_json
   end
+
+  helpers do
+   def current_user
+     if session[:user_id]
+       $usersDB.where(:id => session[:user_id]).all[0]
+     else
+       nil
+     end
+   end
+ end
+
+ not_found do
+   status 404
+   redirect '/error'
+ end
 
   run!
 end

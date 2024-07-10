@@ -31,6 +31,26 @@ class MyServer < Sinatra::Base
     erb :home
   end
 
+  get '/about' do
+    erb :about
+  end
+
+  get '/categories' do
+    erb :categories
+  end
+
+  get '/posts' do
+    erb :posts
+  end
+
+  get '/tags' do
+    erb :tags
+  end
+
+  get '/lorem-ipsum' do
+    erb :lorem_ipsum
+  end
+
   post '/preview' do
     markdown_content = params[:content]
     html_content = settings.markdown.render(markdown_content)

@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="js/general-js.js"></script>
     <% if @css %>
       <% @css.each do |style| %>
         <%= "<link rel=\"stylesheet\" href=\"/css/#{style}.css\">" %>
@@ -25,27 +26,33 @@
     <% end %>
   </head>
   <body>
-    <div class="container">
-      <header class="header">
+    <div class="header">
+      <header class="menu-header">
+        <a href="/">
         <span class="logo">
-          <span class="logo-text">> /$</span>
+          <span class="logo-prefix">> /$</span>
+          <span class="logo-text" id="logo-text"></span>
           <span class="logo-coursor"></span>
-        </span>
+        </span></a>
         <span class="menu__right">
           <nav class="menu">
             <ul>
               <li><a href="/about">About Me</a></li>
               <li><a href="/categories">Categories</a></li>
               <li><a href="/posts">Posts</a></li>
-              <li><a href="/Tags">Tags</a></li>
+              <li><a href="/tags">Tags</a></li>
             </ul>
           </nav>
         </span>
       </header>
+    </div>
+    <div class="container">
       <% if @error %>
         <p class="error"><%= @error %></p>
       <% end %>
-      <%= yield %>
+      <div class="content">
+        <%= yield %>
+      </div>
       <footer class="branding">
         <small>&copy; <%= Time.now.year %> <strong>BarryPL</strong></small>
       </footer>

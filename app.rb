@@ -10,6 +10,7 @@ require 'bcrypt'
 
 DB = Sequel.sqlite 'db/database.db'
 $usersDB = DB[:users]
+$postsDB = DB[:posts]
 
 class HTMLWithPygments < Redcarpet::Render::HTML
   include Rouge::Plugins::Redcarpet
@@ -62,6 +63,30 @@ class MyServer < Sinatra::Base
 
   get '/lorem-ipsum' do
     erb :lorem_ipsum
+  end
+
+  get '/new-post' do
+    if current_user
+      @css = ["new_post-styles"]
+      erb :new_post
+    else
+      redirect '/login'
+    end
+  end
+
+  post '/new-post' do
+    $postsDB.insert(title: "Mocked title",
+      date: Time.now,
+      tags: "Mocked tags",
+      author: current_user[:username],
+      category: "Mocked category",
+      is_public: 0)
+    redirect '/posts-cms'
+  end
+
+  get '/posts-cms' do
+    @css = ["posts_cms-styles"]
+    erb :posts_cms, locals: { posts: $postsDB }
   end
 
   get '/logout' do
@@ -119,12 +144,15 @@ class MyServer < Sinatra::Base
     erb :preview, locals: { content: html_content }
   end
 
+#Spellcheck kinda works for now
   post '/spellcheck' do
-    text = params[:content]
+    request.body.rewind
+    request_payload = JSON.parse(request.body.read)
+    text = request_payload['content']
     uri = URI.parse("https://api.languagetool.org/v2/check")
     response = Net::HTTP.post_form(uri, {
       'text' => text,
-      'language' => 'pl'
+      'language' => 'en'
     })
 
     result = JSON.parse(response.body)

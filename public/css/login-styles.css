@@ -1,20 +1,18 @@
-h1 {
+.box h1 {
   text-align: center;
 }
 
 .box{
+  margin: 25px 0px;
   display: flex;
   flex-direction:column;
   align-items: center;
 }
 
 .login-form {
-  border: solid 2px;
   width: 300px;
   height: 300px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  border: solid 2px #afafaf;
 }
 
 .textbox{
@@ -39,23 +37,19 @@ h1 {
   color: #676767;
 }
 
-.box input[type = "submit"]{
-  background: #121212;
-  display: block;
-  margin: 20px auto;
-  text-align: center;
-  border: 0;
-  padding: 14px 40px;
-  outline: none;
-  color: #fafafa;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
 .icon-div {
     color: #fafafa;
     background: #121212;
     padding: 10px 12px 10px 10px;
     margin: 10px 0px;
     border-radius: 10px 0px 0px 10px;
+}
+
+#canv {
+  position: absolute;
+  display: block;
+  width: 300px;
+  height: 295px;
+  z-index: -1;
+  margin-bottom: 5px;
 }

@@ -1,9 +1,10 @@
-<div>
-  <form action="/preview" method="post">
-    <textarea name="content" id="editor"></textarea>
-    <button type="submit">Podgląd</button>
-  </form>
-</div>
+<h1>New Post</h1>
+<hr>
+<form action="/new-post" method="post">
+  <textarea name="content" id="editor" placeholder="Type Here..."></textarea>
+  <button type="submit">Save</button>
+</form>
+
 <script>
   var easyMDE = new EasyMDE({ element: document.getElementById('editor') });
 
@@ -28,4 +29,5 @@
       console.log(`Error: ${error.message} at position ${error.offset}`);
     });
   });
+
 </script>

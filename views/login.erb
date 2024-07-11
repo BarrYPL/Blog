@@ -1,4 +1,7 @@
+<h1>Login</h1>
+<hr>
 <div class="login-form">
+  <canvas id="canv"></canvas>
   <form class="box" action="/login" method="post">
     <h1>Login <i class="fa-solid fa-lock"></i></h1>
     <div class="textbox">
@@ -16,3 +19,31 @@
     <input type="submit" value="Login">
   </form>
 </div>
+
+<script>
+    var canvas = document.getElementById('canv');
+    var ctx = canvas.getContext('2d');
+
+    var w = canvas.width = 300;
+    var h = canvas.height = 300;
+    var cols = Math.floor(w / 20) + 1;
+    var ypos = Array(cols).fill(0);
+
+    function matrix() {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = '#afafaf';
+        ctx.font = '15pt monospace';
+
+        ypos.forEach((y, ind) => {
+            const text = String.fromCharCode(33 + Math.random() * 94);
+            const x = ind * 20;
+            ctx.fillText(text, x, y);
+            if (y > h + Math.random() * 10000) ypos[ind] = 0;
+            else ypos[ind] = y + 20;
+        });
+    }
+
+    setInterval(matrix, 50);
+</script>

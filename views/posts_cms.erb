@@ -1,0 +1,26 @@
+<h1>Admin panel</h1>
+<hr>
+<table>
+  <tr>
+    <th>Lp.</th>
+    <th>Title</th>
+    <th>Text</th>
+    <th>Tags</th>
+    <th>Category</th>
+    <th>Author</th>
+    <th>Is public</th>
+    <th>Options</th>
+  </tr>
+  <% posts.each_with_index do |post, idx| %>
+    <tr>
+      <td><%= idx + 1 %>.</td>
+      <td><%= post[:title] %></td>
+      <td><%= post[:content] %></td>
+      <td><%= post[:tags] %></td>
+      <td><%= post[:category] %></td>
+      <td><%= post[:author] %></td>
+      <td><%= post[:is_public] %></td>
+      <td><button type="button" name="button">Publish</button></td>
+    </tr>
+  <% end %>
+</table>

@@ -12,6 +12,22 @@ function getRandomSpeed() {
   return Math.floor(Math.random() * (250 - 50 + 1)) + 50;
 }
 
+function blur_background(value) {
+    var contentDiv = document.querySelector('.content');
+    contentDiv.style.filter = "blur(" + value + "px)";
+}
+
+function toggleMenu() {
+    var menuRight = document.querySelector('.menu-right');
+    var isExpanded = menuRight.classList.toggle('menu-right-expanded');
+
+    if (isExpanded) {
+        blur_background(5);
+    } else {
+        blur_background(0);
+    }
+}
+
 //onload
 window.addEventListener("load", function(evt){
   let txt = 'BarrYPL The Hacker';

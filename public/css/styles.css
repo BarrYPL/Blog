@@ -42,6 +42,13 @@ a {
   color: #121212;
 }
 
+p a{
+  font-weight: bold;
+  background: #ddd;
+  padding: 0px 5px;
+  border-radius: 5px;
+}
+
 strong {
   font-size: 1.125rem;
 }
@@ -206,8 +213,56 @@ footer {
   text-align: center;
 }
 
+.hamburger-menu {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+}
+
 @keyframes cursor {
   0% { opacity: 0; }
   50% { opacity: 1; }
   100% { opacity: 0; }
+}
+
+
+@media (max-width: 800px) {
+    .menu-header{
+      padding: 20px 20px;
+    }
+
+    .menu-right {
+        display: none;
+    }
+
+    .hamburger-menu {
+        display: block;
+    }
+
+    /* set menu styles */
+    .menu {
+      border: none;
+      margin-right: 0px;
+    }
+
+    .menu ul{
+      flex-direction: column;
+    }
+
+    .menu li{
+      padding: 20px 0px;
+    }
+}
+
+.menu-right-expanded {
+    display: block;
+    text-align: right;
+    position: fixed;
+    right: 0px;
+    top: 72px;
+    z-index: 1;
+    background: #fafafa;
+    width: 300px;
+    height: 100vh;
 }

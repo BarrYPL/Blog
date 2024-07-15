@@ -2,3 +2,13 @@ form {
   width: 100%;
   margin-top: 20px;
 }
+
+input[type = "text"] {
+  font-family: "Anonymous Pro", monospace;
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}

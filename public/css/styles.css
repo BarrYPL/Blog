@@ -154,7 +154,7 @@ li a:hover::after{
   align-items: center;
   justify-content: space-between;
   margin: 0 auto;
-  width: 800px;
+  width: 960px;
   max-width: 100%;
   padding: 20px 0;
 }
@@ -188,7 +188,7 @@ li a:hover::after{
 }
 
 .container {
-  width: 760px;
+  width: 860px;
   margin: 50px auto 0;
   flex: 1;
   display: flex;

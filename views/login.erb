@@ -1,4 +1,10 @@
 <h1>Login</h1>
+<% if session[:allowed] != 1 %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gruppo&display=swap" rel="stylesheet">
+  <h2>What are you looking for?</h2>
+<% else %>
 <hr>
 <div class="login-form">
   <canvas id="canv"></canvas>
@@ -47,3 +53,4 @@
 
     setInterval(matrix, 50);
 </script>
+<% end %>

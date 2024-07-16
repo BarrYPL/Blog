@@ -1,4 +1,3 @@
 # Ignore
 db/db_init.rb
-
-
+db/db_faker.rb

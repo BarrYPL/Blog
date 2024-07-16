@@ -1,4 +1,5 @@
 "use strict";
+var isExpanded = false;
 
 function _(el){
  return document.getElementById(el);
@@ -19,14 +20,23 @@ function blur_background(value) {
 
 function toggleMenu() {
     var menuRight = document.querySelector('.menu-right');
-    var isExpanded = menuRight.classList.toggle('menu-right-expanded');
-
+    isExpanded = menuRight.classList.toggle('menu-right-expanded');
     if (isExpanded) {
         blur_background(5);
     } else {
         blur_background(0);
     }
 }
+
+window.addEventListener("load", function(evt){
+  document.onclick = function(e) {
+    var menuRight = document.querySelector('.menu-right');
+    if (isExpanded && !(e.target.id == 'hamburger-menu' || e.target.className.includes('menu'))) {
+      isExpanded = menuRight.classList.toggle('menu-right-expanded');
+      blur_background(0);
+    }
+  }
+});
 
 //onload
 window.addEventListener("load", function(evt){

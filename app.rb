@@ -54,6 +54,10 @@ class MyServer < Sinatra::Base
   end
 
   get '/posts' do
+    @css = ["posts-styles"]
+    @posts = DB[:posts].all
+    dates = @posts.map { |post| post[:date] }
+    @years = dates.map { |date| date.year }.uniq
     erb :posts
   end
 
@@ -94,9 +98,25 @@ class MyServer < Sinatra::Base
     redirect '/'
   end
 
+  get '/getlogincookie' do
+    if current_user
+      @css = ["home-styles"]
+      erb :home
+    else
+      session.clear
+      session[:allowed] = 1
+      redirect '/login'
+    end
+  end
+
   get '/login' do
-    @css = ["login-styles"]
-    erb :login
+    if current_user
+      @css = ["home-styles"]
+      erb :home
+    else
+      @css = ["login-styles"]
+      erb :login
+    end
   end
 
   def login_failed

@@ -1,2 +1,20 @@
 <h1>Posts</h1>
 <hr>
+<% @years.each do |year| %>
+  <div class="year-group">
+    <h2><%= year %></h2>
+    <div class="posts">
+      <% @posts.select { |post| post[:date].year == year }.each do |post| %>
+        <div class="post-elem">
+          <div class="post">
+            <h2><%= post[:title] %></h2>
+            <p><%= post[:content] %></p>
+          </div>
+          <div class="post-date">
+            <p><%= post[:date].strftime("%-d %b") %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -55,10 +55,19 @@ class MyServer < Sinatra::Base
 
   get '/posts' do
     @css = ["posts-styles"]
-    @posts = DB[:posts].all
+    @posts = DB[:posts].where(:is_public => 1).all
     dates = @posts.map { |post| post[:date] }
     @years = dates.map { |date| date.year }.uniq
     erb :posts
+  end
+
+  post '/publish' do
+    if current_user[:isAdmin] == 1
+      $postsDB.where(id: params[:post_id]).update(is_public: params[:button])
+      redirect '/posts-cms'
+    else
+      redirect '/error'
+    end
   end
 
   get '/tags' do

@@ -20,7 +20,14 @@
       <td><%= post[:category] %></td>
       <td><%= post[:author] %></td>
       <td><%= post[:is_public] %></td>
-      <td><button type="button" name="button">Publish</button></td>
+      <form class="" action="publish" method="post">
+        <input type="hidden" name="post_id" value="<%= post[:id] %>">
+        <% if post[:is_public] == 1 %>
+          <td><button type="submit" value="0" name="button">Hide</button></td>
+        <% else %>
+          <td><button type="submit" value="1" name="button">Publish</button></td>
+        <% end %>
+      </form>
     </tr>
   <% end %>
 </table>

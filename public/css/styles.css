@@ -53,29 +53,6 @@ strong {
   font-size: 1.125rem;
 }
 
-input[type = "submit"] {
- background: #121212;
- display: block;
- margin: 20px auto;
- text-align: center;
- border: 0;
- padding: 14px 40px;
- outline: none;
- color: #fafafa;
- cursor: pointer;
- border-radius: 5px;
-}
-
-button[type = "submit"] {
- background: #121212;
- border: 0;
- padding: 14px 40px;
- outline: none;
- color: #fafafa;
- cursor: pointer;
- border-radius: 5px;
-}
-
 .error {
   color: #fa0200;
 }

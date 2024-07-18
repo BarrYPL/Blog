@@ -89,8 +89,13 @@ class MyServer < Sinatra::Base
       tags = post[:tags].split(',').map(&:strip).map(&:downcase)
       tags.include?(tag_param)
     end
-    content_type :json
-    { tag: tag_param, articles: @posts }.to_json
+    if @posts.empty?
+      content_type :json
+      { success: false, error: "Nie znaleziono żadnych postów dla tagu '#{tag_param}'" }.to_json
+    else
+      content_type :json
+      { success: true, tag: tag_param, articles: @posts }.to_json
+    end
   end
 
   get '/lorem-ipsum' do

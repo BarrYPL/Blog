@@ -8,13 +8,22 @@ document.addEventListener('DOMContentLoaded', function() {
       fetch(`/tags/${tagName}`, {
         method: 'POST',
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
       .then(data => {
-        renderArticles(data);
+        if (data.success) {
+          renderArticles(data);
+        } else {
+          throw new Error(data.error || 'Wystąpił nieznany błąd');
+        }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Wystąpił błąd podczas przetwarzania żądania.');
+        displayError('Wystąpił błąd podczas przetwarzania żądania.');
       });
     });
   });
@@ -25,29 +34,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const tagHeader = document.createElement('h2');
     tagHeader.classList.add('choosen-tag');
-    tagHeader.textContent = ">/tags/"+data.tag+" $";
+    tagHeader.textContent = data.tag;
     articlesContainer.appendChild(tagHeader);
+
+    const horizontalLane = document.createElement('hr');
+    articlesContainer.appendChild(horizontalLane);
 
     const articlesDiv = document.createElement('div');
     articlesDiv.classList.add('articles');
+
+    if (data.articles && data.articles.length > 0) {
+      data.articles.forEach(articleData => {
+        const articleDiv = document.createElement('div');
+        articleDiv.classList.add('article');
+
+        const titleElement = document.createElement('h3');
+        titleElement.textContent = articleData.title;
+
+        const contentElement = document.createElement('p');
+        contentElement.textContent = articleData.content;
+
+        articleDiv.appendChild(titleElement);
+        articleDiv.appendChild(contentElement);
+        articlesDiv.appendChild(articleDiv);
+      });
+    } else {
+      const noArticlesMessage = document.createElement('p');
+      noArticlesMessage.textContent = 'Brak artykułów dla tego tagu.';
+      articlesDiv.appendChild(noArticlesMessage);
+    }
+
     articlesContainer.appendChild(articlesDiv);
-
-    data.articles.forEach(articleData => {
-      const articleDiv = document.createElement('div');
-      articleDiv.classList.add('article');
-
-      const titleElement = document.createElement('h3');
-      titleElement.textContent = articleData.title;
-
-      const contentElement = document.createElement('p');
-      contentElement.textContent = articleData.content;
-
-      articleDiv.appendChild(titleElement);
-      articleDiv.appendChild(contentElement);
-      articlesDiv.appendChild(articleDiv);
-    });
     const container = document.querySelector('.articles-container');
-    container.innerHTML = '';
-    container.appendChild(articlesContainer);
+    if (container) {
+      container.innerHTML = '';
+      container.appendChild(articlesContainer);
+    } else {
+      displayError('Nie znaleziono kontenera .articles-container.');
+    }
+  }
+
+  function displayError(message) {
+    alert(message);
   }
 });

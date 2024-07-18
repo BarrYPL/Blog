@@ -1,2 +1,23 @@
-<h1>Categories</h1>
+<h1>>/Categories $</h1>
 <hr>
+<% @categories.each do |category| %>
+  <div class="category-post-group">
+    <div class="category">
+      <h2><a href="/categories/<%= category %>"><%= category %></a></h2>
+    </div>
+    <div class="posts">
+      <% @posts.select { |post| post[:category].split(',').include?(category) }.take(2).each do |post| %>
+        <div class="post-elem">
+          <div class="post">
+            <h2><%= post[:title] %></h2>
+            <p><%= post[:content] %></p>
+          </div>
+          <div class="post-date">
+            <p><%= post[:date].strftime("%-d %b") %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <hr>
+<% end %>

@@ -50,7 +50,20 @@ class MyServer < Sinatra::Base
   end
 
   get '/categories' do
+    @css = ["categories-styles"]
+    @posts = DB[:posts].where(is_public: 1).all
+    @categories = @posts.flat_map { |post| post[:category].split(',') }.uniq
+    @categories.sort_by! { |category| category.downcase == 'intro' ? '' : category.downcase }
     erb :categories
+  end
+
+  get '/categories/:category' do
+    @css = ["categories-styles"]
+    category_param = params[:category]
+    @posts = DB[:posts].where(is_public: 1).all
+    @categories = [category_param]
+    @posts = @posts.select { |post| post[:category].split(',').map(&:downcase).include?(category_param.downcase) }
+    erb :category
   end
 
   get '/posts' do
@@ -61,17 +74,23 @@ class MyServer < Sinatra::Base
     erb :posts
   end
 
-  post '/publish' do
-    if current_user[:isAdmin] == 1
-      $postsDB.where(id: params[:post_id]).update(is_public: params[:button])
-      redirect '/posts-cms'
-    else
-      redirect '/error'
-    end
+  get '/tags' do
+    @css = ["tags-styles"]
+    @js = ["tags-js"]
+    @posts = DB[:posts].where(is_public: 1).all
+    @tags = @posts.flat_map { |post| post[:tags].split(',') }.uniq
+    erb :tags
   end
 
-  get '/tags' do
-    erb :tags
+  post '/tags/:tag' do
+    tag_param = params[:tag].downcase
+    @posts = DB[:posts].where(is_public: 1).all
+    @posts.select! do |post|
+      tags = post[:tags].split(',').map(&:strip).map(&:downcase)
+      tags.include?(tag_param)
+    end
+    content_type :json
+    { tag: tag_param, articles: @posts }.to_json
   end
 
   get '/lorem-ipsum' do
@@ -98,8 +117,35 @@ class MyServer < Sinatra::Base
   end
 
   get '/posts-cms' do
-    @css = ["posts_cms-styles"]
-    erb :posts_cms, locals: { posts: $postsDB }
+    if current_user
+      if current_user[:isAdmin] == 1
+        @css = ["cms-styles"]
+        @js = ["cms-js"]
+        erb :cms, locals: { posts: $postsDB }
+      end
+    else
+      redirect '/login'
+    end
+  end
+
+  post '/publish' do
+    post_id = params[:post_id]
+    button_value = params[:button]
+    if current_user
+      if current_user[:isAdmin] == 1
+        if post_id.nil? || post_id.empty? || button_value.nil? || button_value.empty?
+          halt 400, { success: false, message: "Button value is missing" }.to_json
+        end
+
+        $postsDB.where(id: post_id).update(is_public: button_value)
+        content_type :json
+        { success: true, message: "Post updated successfully" }.to_json
+      end
+    else
+      content_type :json
+      status 403
+      { success: false, message: "Unauthorized" }.to_json
+    end
   end
 
   get '/logout' do

@@ -1,0 +1,26 @@
+<div class="title-div">
+  <h1>>/categories/<%= @categories.first %> $</h1>
+  <div>
+    <a href="/categories" class="back-button">cd ..</a>
+  </div>
+</div>
+<hr>
+<div class="category-post-group">
+  <div class="category">
+    <h2><%= @categories.first %></h2>
+  </div>
+  <div class="posts">
+    <% @posts.take(2).each do |post| %>
+      <div class="post-elem">
+        <div class="post">
+          <h2><%= post[:title] %></h2>
+          <p><%= post[:content] %></p>
+        </div>
+        <div class="post-date">
+          <p><%= post[:date].strftime("%-d %b") %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+<hr>

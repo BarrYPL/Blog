@@ -66,6 +66,22 @@ class MyServer < Sinatra::Base
     erb :category
   end
 
+  get '/post/:id' do
+    @css = ["post-styles"]
+    @post = $postsDB.where(id: params[:id]).all.first
+    if @post[:is_public] == 1
+      return erb :post
+    end
+
+    if current_user
+      if current_user[:is_admin] == 1
+        return erb :post
+      end
+    end
+
+    redirect '/error'
+  end
+
   get '/posts' do
     @css = ["posts-styles"]
     @posts = DB[:posts].where(:is_public => 1).all
@@ -96,10 +112,6 @@ class MyServer < Sinatra::Base
       content_type :json
       { success: true, tag: tag_param, articles: @posts }.to_json
     end
-  end
-
-  get '/lorem-ipsum' do
-    erb :lorem_ipsum
   end
 
   get '/new-post' do

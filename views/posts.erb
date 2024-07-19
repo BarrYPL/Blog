@@ -7,7 +7,7 @@
       <% @posts.select { |post| post[:date].year == year }.each do |post| %>
         <div class="post-elem">
           <div class="post">
-            <h3><%= post[:title] %></h3>
+            <a href="/post/<%= post[:id] %>"><h3><%= post[:title] %></h3></a>
             <p><%= post[:content] %></p>
           </div>
           <div class="post-date">

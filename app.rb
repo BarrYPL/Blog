@@ -38,7 +38,7 @@ class MyServer < Sinatra::Base
     set :show_exceptions, 'true' #Those are errors
   end
 
-  set :markdown, Redcarpet::Markdown.new(HTMLWithPygments.new, fenced_code_blocks: true)
+  set :markdown, Redcarpet::Markdown.new(HTMLWithPygments.new, fenced_code_blocks: true, :smartypants => true)
 
   get '/' do
     @css = ["home-styles"]
@@ -51,7 +51,7 @@ class MyServer < Sinatra::Base
 
   get '/categories' do
     @css = ["categories-styles"]
-    @posts = DB[:posts].where(is_public: 1).all
+    @posts = DB[:posts].where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
     @categories = @posts.flat_map { |post| post[:category].split(',') }.uniq
     @categories.sort_by! { |category| category.downcase == 'intro' ? '' : category.downcase }
     erb :categories
@@ -60,7 +60,7 @@ class MyServer < Sinatra::Base
   get '/categories/:category' do
     @css = ["categories-styles"]
     category_param = params[:category]
-    @posts = DB[:posts].where(is_public: 1).all
+    @posts = DB[:posts].where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
     @categories = [category_param]
     @posts = @posts.select { |post| post[:category].split(',').map(&:downcase).include?(category_param.downcase) }
     erb :category
@@ -69,6 +69,8 @@ class MyServer < Sinatra::Base
   get '/post/:id' do
     @css = ["post-styles"]
     @post = $postsDB.where(id: params[:id]).all.first
+    @post[:content] = prepare_post(@post)
+    puts @post
     if @post[:is_public] == 1
       return erb :post
     end
@@ -84,7 +86,7 @@ class MyServer < Sinatra::Base
 
   get '/posts' do
     @css = ["posts-styles"]
-    @posts = DB[:posts].where(:is_public => 1).all
+    @posts = DB[:posts].where(:is_public => 1).order(Sequel.desc(:date)).all.each { |post| post[:content] = prepare_post(post) }
     dates = @posts.map { |post| post[:date] }
     @years = dates.map { |date| date.year }.uniq
     erb :posts
@@ -93,14 +95,14 @@ class MyServer < Sinatra::Base
   get '/tags' do
     @css = ["tags-styles"]
     @js = ["tags-js"]
-    @posts = DB[:posts].where(is_public: 1).all
+    @posts = DB[:posts].where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
     @tags = @posts.flat_map { |post| post[:tags].split(',') }.uniq
     erb :tags
   end
 
   post '/tags/:tag' do
     tag_param = params[:tag].downcase
-    @posts = DB[:posts].where(is_public: 1).all
+    @posts = DB[:posts].where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
     @posts.select! do |post|
       tags = post[:tags].split(',').map(&:strip).map(&:downcase)
       tags.include?(tag_param)
@@ -124,11 +126,12 @@ class MyServer < Sinatra::Base
   end
 
   post '/new-post' do
-    $postsDB.insert(title: "Mocked title",
+    $postsDB.insert(title: params[:title],
       date: Time.now,
       tags: "Mocked tags",
       author: current_user[:username],
       category: "Mocked category",
+      content: params[:content],
       is_public: 0)
     redirect '/posts-cms'
   end
@@ -191,13 +194,6 @@ class MyServer < Sinatra::Base
     end
   end
 
-  def login_failed
-   session.clear
-   @error = 'Username or password was incorrect.'
-   @css = ["login-styles"]
-   erb :login
-  end
-
   post '/login' do
     if params[:username].empty? || params[:password].empty?
       login_failed
@@ -254,6 +250,19 @@ class MyServer < Sinatra::Base
 
     content_type :json
     { errors: errors }.to_json
+  end
+
+  def login_failed
+   session.clear
+   @error = 'Username or password was incorrect.'
+   @css = ["login-styles"]
+   erb :login
+  end
+
+  def prepare_post(post)
+    markdown_content = post[:content]
+    html_content = settings.markdown.render(markdown_content)
+    return html_content
   end
 
   helpers do

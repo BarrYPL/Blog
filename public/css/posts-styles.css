@@ -1,5 +1,6 @@
 .year-group {
   display: flex;
+  max-width: 100%;
 }
 
 .year-group h2 {
@@ -7,19 +8,23 @@
   margin-bottom: 5px;
   border-right: 1px solid #ccc;
   padding-right: 20px;
+  min-width: 120px;
 }
 
 .post{
+  padding: 0px 10px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 8;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 600px;
 }
 
 .post-elem {
   display: flex;
   margin-bottom: 20px;
+  justify-content: space-between;
 }
 
 .post-date p {

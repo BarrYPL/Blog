@@ -17,6 +17,7 @@
   border-radius: 8px;
   transition: background-color 0.3s ease;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .tag:hover {
@@ -28,5 +29,9 @@
 }
 
 .articles {
+  margin-top: 20px;
+}
+
+.article {
   margin-top: 20px;
 }

@@ -9,7 +9,7 @@
       <% @posts.select { |post| post[:category].split(',').include?(category) }.take(2).each do |post| %>
         <div class="post-elem">
           <div class="post">
-            <h2><%= post[:title] %></h2>
+            <a href="/post/<%= post[:id] %>"><h2><%= post[:title] %></h2></a>
             <p><%= post[:content] %></p>
           </div>
           <div class="post-date">

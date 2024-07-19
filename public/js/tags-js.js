@@ -49,12 +49,16 @@ document.addEventListener('DOMContentLoaded', function() {
         articleDiv.classList.add('article');
 
         const titleElement = document.createElement('h3');
-        titleElement.textContent = articleData.title;
+
+        const articleAnchor = document.createElement('a');
+        articleAnchor.setAttribute('href','/post/'+articleData.id);
+        articleAnchor.innerHTML = articleData.title;
 
         const contentElement = document.createElement('p');
         contentElement.textContent = articleData.content;
 
         articleDiv.appendChild(titleElement);
+        titleElement.appendChild(articleAnchor);
         articleDiv.appendChild(contentElement);
         articlesDiv.appendChild(articleDiv);
       });

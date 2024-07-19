@@ -74,7 +74,7 @@ class MyServer < Sinatra::Base
     end
 
     if current_user
-      if current_user[:is_admin] == 1
+      if current_user[:isAdmin] == 1
         return erb :post
       end
     end

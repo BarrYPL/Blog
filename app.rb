@@ -70,7 +70,7 @@ class MyServer < Sinatra::Base
     @css = ["post-styles"]
     @post = $postsDB.where(id: params[:id]).all.first
     @post[:content] = prepare_post(@post)
-    puts @post
+
     if @post[:is_public] == 1
       return erb :post
     end

@@ -92,6 +92,18 @@ class MyServer < Sinatra::Base
     erb :posts
   end
 
+  get '/edit/:id' do
+    if current_user
+      if current_user[:isAdmin] == 1
+        @post = $postsDB.where(id: params[:id]).all.first
+        @css = ["new_post-styles"]
+        erb :new_post
+      end
+    else
+      redirect '/login'
+    end
+  end
+
   get '/tags' do
     @css = ["tags-styles"]
     @js = ["tags-js"]

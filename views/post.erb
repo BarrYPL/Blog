@@ -1,6 +1,9 @@
 <div class="title-div">
   <h1>>/posts/<%= @post[:title] %> $</h1>
-  <div>
+  <div class="buttons-div">
+    <% if current_user[:isAdmin] == 1 %>
+      <a href="/edit/<%= @post[:id] %>" class="back-button"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+    <% end %>
     <a href="/posts" class="back-button">cd ..</a>
   </div>
 </div>

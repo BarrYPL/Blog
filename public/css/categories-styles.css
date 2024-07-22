@@ -1,7 +1,7 @@
 .category-post-group {
   display: flex;
   margin-bottom: 20px;
-  max-width: 100%;
+  width: 100%;
 }
 
 .category {
@@ -28,6 +28,7 @@
 .post-elem {
   display: flex;
   margin-bottom: 20px;
+  justify-content: space-between;
 }
 
 .post-date p {
@@ -55,4 +56,8 @@
 
 .back-button:hover {
   background-color: #ccc;
+}
+
+.post *{
+  padding: 0px  0px 0px 2px;
 }

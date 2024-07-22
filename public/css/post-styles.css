@@ -5,10 +5,17 @@
   align-items: baseline;
 }
 
+.buttons-div {
+  display: flex;
+}
+
+.buttons-div > :first-child {
+  margin-right: 10px;
+}
+
 .back-button {
   display: inline-block;
   padding: 10px 20px;
-  margin-top: 20px;
   background-color: #121212;
   color: white;
   text-decoration: none;

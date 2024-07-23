@@ -1,12 +1,4 @@
-require 'sinatra'
-require 'redcarpet'
-require 'rouge'
-require 'rouge/plugins/redcarpet'
-require 'json'
-require 'net/http'
-require 'uri'
-require 'sequel'
-require 'bcrypt'
+require_relative('modules/imports')
 
 DB = Sequel.sqlite 'db/database.db'
 $usersDB = DB[:users]
@@ -50,6 +42,7 @@ class MyServer < Sinatra::Base
   end
 
   get '/categories' do
+    @js = ["sanitizehtml-js"]
     @css = ["categories-styles"]
     @posts = DB[:posts].where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
     @categories = @posts.flat_map { |post| post[:category].split(',') }.uniq
@@ -75,16 +68,15 @@ class MyServer < Sinatra::Base
       return erb :post
     end
 
-    if current_user
-      if current_user[:isAdmin] == 1
-        return erb :post
-      end
+    if current_user.is_admin?
+      return erb :post
     end
 
     redirect '/error'
   end
 
   get '/posts' do
+    @js = ["sanitizehtml-js"]
     @css = ["posts-styles"]
     @posts = DB[:posts].where(:is_public => 1).order(Sequel.desc(:date)).all.each { |post| post[:content] = prepare_post(post) }
     dates = @posts.map { |post| post[:date] }
@@ -93,32 +85,35 @@ class MyServer < Sinatra::Base
   end
 
   get '/edit/:id' do
-    if current_user
-      if current_user[:isAdmin] == 1
-        @post = $postsDB.where(id: params[:id]).all.first
-        @css = ["new_post-styles"]
-        erb :new_post
-      end
-    else
-      redirect '/login'
+    if current_user.is_admin?
+      @js = ["new-post-js"]
+      @categories = []
+      @post = $postsDB.where(id: params[:id]).all.first
+      @categories << @post[:category]
+      @tags = @post[:tags]
+      @css = ["new_post-styles"]
+      return erb :new_post
     end
+
+    redirect '/error'
   end
 
   get '/tags' do
     @css = ["tags-styles"]
     @js = ["tags-js"]
-    @posts = DB[:posts].where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
+    @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
     @tags = @posts.flat_map { |post| post[:tags].split(',') }.uniq
     erb :tags
   end
 
   post '/tags/:tag' do
     tag_param = params[:tag].downcase
-    @posts = DB[:posts].where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
+    @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
     @posts.select! do |post|
       tags = post[:tags].split(',').map(&:strip).map(&:downcase)
       tags.include?(tag_param)
     end
+
     if @posts.empty?
       content_type :json
       { success: false, error: "Nie znaleziono żadnych postów dla tagu '#{tag_param}'" }.to_json
@@ -129,50 +124,53 @@ class MyServer < Sinatra::Base
   end
 
   get '/new-post' do
-    if current_user
+    if current_user.is_admin?
+      @js = ["new-post-js"]
+      @categories = $postsDB.select(:category).distinct.map(:category)
       @css = ["new_post-styles"]
-      erb :new_post
-    else
-      redirect '/login'
+      return erb :new_post
     end
+
+    redirect '/error'
   end
 
   post '/new-post' do
     $postsDB.insert(title: params[:title],
       date: Time.now,
-      tags: "Mocked tags",
+      tags: params[:tags],
       author: current_user[:username],
-      category: "Mocked category",
+      category: params[:category],
       content: params[:content],
       is_public: 0)
     redirect '/posts-cms'
   end
 
+  post '/edit-post' do
+    params.inspect
+  end
+
   get '/posts-cms' do
-    if current_user
-      if current_user[:isAdmin] == 1
-        @css = ["cms-styles"]
-        @js = ["cms-js"]
-        erb :cms, locals: { posts: $postsDB }
-      end
-    else
-      redirect '/login'
+    if current_user.is_admin?
+      @css = ["cms-styles"]
+      @js = ["cms-js"]
+      return erb :cms, locals: { posts: $postsDB }
     end
+
+    redirect '/error'
   end
 
   post '/publish' do
     post_id = params[:post_id]
     button_value = params[:button]
-    if current_user
-      if current_user[:isAdmin] == 1
-        if post_id.nil? || post_id.empty? || button_value.nil? || button_value.empty?
-          halt 400, { success: false, message: "Button value is missing" }.to_json
-        end
 
-        $postsDB.where(id: post_id).update(is_public: button_value)
-        content_type :json
-        { success: true, message: "Post updated successfully" }.to_json
+    if current_user.is_admin?
+      if post_id.nil? || post_id.empty? || button_value.nil? || button_value.empty?
+        halt 400, { success: false, message: "Button value is missing" }.to_json
       end
+
+      $postsDB.where(id: post_id).update(is_public: button_value)
+      content_type :json
+      { success: true, message: "Post updated successfully" }.to_json
     else
       content_type :json
       status 403
@@ -236,12 +234,6 @@ class MyServer < Sinatra::Base
   get '/error' do
     @css = ["error404-styles"]
     erb :error404
-  end
-
-  post '/preview' do
-    markdown_content = params[:content]
-    html_content = settings.markdown.render(markdown_content)
-    erb :preview, locals: { content: html_content }
   end
 
 #Spellcheck kinda works for now

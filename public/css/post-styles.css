@@ -13,20 +13,6 @@
   margin-right: 10px;
 }
 
-.back-button {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #121212;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-
-.back-button:hover {
-  background-color: #ccc;
-}
-
 .post-container {
   width: 100%;
 }

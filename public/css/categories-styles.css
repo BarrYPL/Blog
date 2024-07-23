@@ -19,7 +19,7 @@
 .post{
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 6;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 600px;
@@ -58,6 +58,6 @@
   background-color: #ccc;
 }
 
-.post *{
-  padding: 0px  0px 0px 2px;
+.post > div {
+  padding: 0px 2px;
 }

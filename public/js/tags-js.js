@@ -1,3 +1,7 @@
+function removeHTMLTagsFromString(htmlString) {
+    return new DOMParser().parseFromString(htmlString, 'text/html').body.textContent || '';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   const tags = document.querySelectorAll('.tag');
 
@@ -55,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         articleAnchor.innerHTML = articleData.title;
 
         const contentElement = document.createElement('p');
-        contentElement.textContent = articleData.content;
+        contentElement.textContent = removeHTMLTagsFromString(articleData.content);
 
         articleDiv.appendChild(titleElement);
         titleElement.appendChild(articleAnchor);

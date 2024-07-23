@@ -1,8 +1,24 @@
 <h1>>/New Post $</h1>
 <hr>
-<form action="/new-post" method="post">
+<% if @post[:is_public] == 0 %><h2 class="info">UNPUBLISHED!</h2><% end %>
+<form id="post-form" <% if @post %> action="/edit-post" <% else %> action="/new-post" <% end %> method="post">
+  <input type="hidden" name="id" value="<%= @post[:id] %>">
   <input type="text" name="title" <% if @post %>value="<%= @post[:title] %>"<% else %>placeholder="Name your post"<% end %>>
+  <% if @categories.count > 1 %>
+  <div class="custom-select" came="category">
+    <select>
+      <option>Select category...</option>
+      <% @categories.each do |cat| %>
+        <option value="<%= cat %>"><%= cat %></option>
+      <% end %>
+    </select>
+  </div>
+  <% else %>
+    <input type="text" name="category" value="<%= @categories.first %>">
+  <% end %>
   <textarea name="content" id="editor" placeholder="Type Here..."><% if @post %><%= @post[:content] %><% end %></textarea>
+  <input type="text" name="tags" <% if @tags %> value="<%= @tags %>" <% else %>placeholder="Some, tags, comma, separated..."<% end %>>
+  <input type="hidden" name="is_public" <% if @post[:is_public] == 1 %> value="1" <% else %>value="0"<% end %>>
   <button type="submit">Save</button>
 </form>
 
@@ -29,5 +45,4 @@
       console.log(`Error: ${error.message} at position ${error.offset}`);
     });
   });
-
 </script>

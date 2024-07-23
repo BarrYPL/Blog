@@ -14,12 +14,11 @@
   <% posts.each_with_index do |post, idx| %>
     <tr>
       <td><%= idx + 1 %>.</td>
-      <td><%= post[:title] %></td>
+      <td><a href="/post/<%= post[:id] %>"><%= post[:title] %></a></td>
       <td><%= post[:content] %></td>
       <td><%= post[:tags] %></td>
       <td><%= post[:category] %></td>
       <td><%= post[:author] %></td>
-      <td id="is_public_<%= post[:id] %>"><%= post[:is_public] %></td>
       <form class="publish-form" method="post">
         <input type="hidden" name="post_id" value="<%= post[:id] %>">
         <% if post[:is_public] == 1 %>
@@ -28,6 +27,7 @@
           <td><button type="submit" value="1" name="button">Publish</button></td>
         <% end %>
       </form>
+      <td><a href="/delete/<%= post[:id] %>" class="main-button">Delete</a></td>
     </tr>
   <% end %>
 </table>

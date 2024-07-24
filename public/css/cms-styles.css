@@ -41,3 +41,7 @@ td button:hover {
 .container {
   width: 1060px;
 }
+
+.hide-gray {
+  background: #999;
+}

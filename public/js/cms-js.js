@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
+  function block_deleting(e){
+    e.preventDefault();
+    if(window.confirm("Na pewno chcesz usunąć element?")){
+      window.location = e.currentTarget.href;
+    }
+  }
+  
   const forms = document.querySelectorAll('.publish-form');
 
   forms.forEach(function(form) {
@@ -37,4 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   });
+
+  document.querySelectorAll('#del-button').forEach(item => {
+    item.addEventListener('click', block_deleting);
+  })
 });

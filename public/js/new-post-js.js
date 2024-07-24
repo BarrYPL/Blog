@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+//Dropdown list JS
   var x, i, j, l, ll, selElmnt, a, b, c;
   var hiddenCategoryInput = document.createElement('input');
   hiddenCategoryInput.type = 'hidden';
@@ -72,6 +73,35 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   document.addEventListener("click", closeAllSelect);
 
+//Name checker
+const inputElement = document.querySelector('input[name="title"]');
+const errorElement = document.querySelector('p.error');
+
+inputElement.addEventListener('input', function() {
+    const inputValue = inputElement.value;
+
+    fetch('/check-title', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title: inputValue })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            errorElement.textContent = data.error;
+        } else {
+            errorElement.textContent = '';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        errorElement.textContent = 'Wystąpił błąd podczas sprawdzania loginu.';
+    });
+});
+
+//JS checking form
   document.getElementById('post-form').addEventListener('submit', function(event) {
     var title = document.querySelector('input[name="title"]').value.trim();
     var tags = document.querySelector('input[name="tags"]').value.trim();

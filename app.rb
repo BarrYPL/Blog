@@ -114,6 +114,10 @@ class MyServer < Sinatra::Base
       tags.include?(tag_param)
     end
 
+    @posts.each do |post|
+      post[:title] = post[:title].titleize
+    end
+
     if @posts.empty?
       content_type :json
       { success: false, error: "Nie znaleziono żadnych postów dla tagu '#{tag_param}'" }.to_json
@@ -125,6 +129,7 @@ class MyServer < Sinatra::Base
 
   get '/new-post' do
     if current_user.is_admin?
+      @error = " "
       @js = ["new-post-js"]
       @categories = $postsDB.select(:category).distinct.map(:category)
       @css = ["new_post-styles"]
@@ -175,6 +180,38 @@ class MyServer < Sinatra::Base
       content_type :json
       status 403
       { success: false, message: "Unauthorized" }.to_json
+    end
+  end
+
+  post '/check-title' do
+    request.body.rewind
+    data = JSON.parse(request.body.read)
+    title = data['title'].strip.downcase
+    if title.nil? || title.empty?
+        { error: 'Title cannot be empty' }.to_json
+      else
+        if $postsDB.select(:title).where(:title => title).all.count > 0
+          content_type :json
+          { success: false, error: "Post with that title already exists." }.to_json
+        else
+          content_type :json
+          { success: true, message: 'Title is valid' }.to_json
+        end
+      end
+  end
+
+  get '/delete/:id' do
+    @css = ["cms-styles"]
+    @js = ["cms-js"]
+    if current_user.is_admin?
+      unless $postsDB.select(:id).where(:id => params[:id]).first.nil?
+        $postsDB.select(:id).where(:id => params[:id]).delete
+      else
+        @error = "Invalid ID"
+      end
+      return erb :cms, locals: { posts: $postsDB }
+    else
+      redirect '/error'
     end
   end
 

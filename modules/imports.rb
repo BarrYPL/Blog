@@ -26,3 +26,9 @@ class Hash
     end
   end
 end
+
+class String
+  def titleize
+    self.split.map(&:capitalize).join(' ')
+  end
+end

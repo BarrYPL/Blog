@@ -2,6 +2,13 @@ function removeHTMLTagsFromString(htmlString) {
     return new DOMParser().parseFromString(htmlString, 'text/html').body.textContent || '';
 }
 
+function capitalize(str) {
+  if (typeof str !== 'string' || str.length === 0) {
+    return str;
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   const tags = document.querySelectorAll('.tag');
 
@@ -38,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const tagHeader = document.createElement('h2');
     tagHeader.classList.add('choosen-tag');
-    tagHeader.textContent = data.tag;
+    tagHeader.textContent = capitalize(data.tag);
     articlesContainer.appendChild(tagHeader);
 
     const horizontalLane = document.createElement('hr');

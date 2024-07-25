@@ -2,7 +2,7 @@
 <hr>
 <div class="tags-cloud">
   <% @tags.sort.each do |tag| %>
-    <p class="tag"><%= tag %></p>
+    <p class="tag"><%= tag.titleize %></p>
   <% end %>
 </div>
 <div class="articles-container">

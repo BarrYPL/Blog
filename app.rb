@@ -60,6 +60,7 @@ class MyServer < Sinatra::Base
   end
 
   get '/post/:id' do
+    @js = ["post-js"]
     @css = ["post-styles"]
     @post = $postsDB.where(id: params[:id]).all.first
     @post[:content] = prepare_post(@post)

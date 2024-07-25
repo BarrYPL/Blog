@@ -7,7 +7,8 @@ require 'net/http'
 require 'uri'
 require 'sequel'
 require 'bcrypt'
-require_relative './post.rb'
+require 'erb'
+require_relative './post_from_files.rb'
 
 class NilClass
   def is_admin?

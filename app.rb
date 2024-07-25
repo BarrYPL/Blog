@@ -62,7 +62,17 @@ class MyServer < Sinatra::Base
   get '/post/:id' do
     @js = ["post-js"]
     @css = ["post-styles"]
-    @post = $postsDB.where(id: params[:id]).all.first
+    
+    if params[:id].numbers_only?
+      @post = $postsDB.where(id: params[:id]).all.first
+    else
+      @post = $postsDB.where(Sequel.like(:title, params[:id], case_insensitive: true)).all.first
+    end
+
+    if @post.nil?
+      redirect '/error'
+    end
+
     @post[:content] = prepare_post(@post)
 
     if @post[:is_public] == 1

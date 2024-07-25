@@ -66,7 +66,7 @@ window.addEventListener("load", function(evt){
 
   async function loopTypeDelete() {
     while (true) {
-      await typeWriter(subpage);
+      await typeWriter(decodeURI(subpage));
       await sleep(2000);
       await deleteWriter();
       await sleep(1000);

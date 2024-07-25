@@ -31,4 +31,8 @@ class String
   def titleize
     self.split.map(&:capitalize).join(' ')
   end
+
+  def numbers_only?
+    self.match?(/\A\d+\z/)
+  end
 end

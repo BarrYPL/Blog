@@ -41,10 +41,42 @@ class MyServer < Sinatra::Base
     erb :about
   end
 
+  get '/testpost/:id' do
+    @js = ["post-js"]
+    @css = ["post-styles"]
+
+    if params[:id].numbers_only?
+      @post = $postsDB.where(id: params[:id]).all.first
+    else
+      @post = $postsDB.where(Sequel.like(:title, params[:id], case_insensitive: true)).all.first
+    end
+
+    if @post.nil?
+      redirect '/error'
+    end
+
+    unless @post[:files_path].nil?
+      @post = Post.new(params[:id], $postsDB)
+      #Whole idea is bad postclass should return hash object
+    else
+      @post[:content] = prepare_post(@post)
+    end
+
+    if @post[:is_public] == 1
+      return erb :post
+    end
+
+    if current_user.is_admin?
+      return erb :post
+    end
+
+    redirect '/error'
+  end
+
   get '/categories' do
     @js = ["sanitizehtml-js"]
     @css = ["categories-styles"]
-    @posts = DB[:posts].where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
+    @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
     @categories = @posts.flat_map { |post| post[:category].split(',') }.uniq
     @categories.sort_by! { |category| category.downcase == 'intro' ? '' : category.downcase }
     erb :categories
@@ -53,7 +85,7 @@ class MyServer < Sinatra::Base
   get '/categories/:category' do
     @css = ["categories-styles"]
     category_param = params[:category]
-    @posts = DB[:posts].where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
+    @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post) }
     @categories = [category_param]
     @posts = @posts.select { |post| post[:category].split(',').map(&:downcase).include?(category_param.downcase) }
     erb :category
@@ -62,7 +94,7 @@ class MyServer < Sinatra::Base
   get '/post/:id' do
     @js = ["post-js"]
     @css = ["post-styles"]
-    
+
     if params[:id].numbers_only?
       @post = $postsDB.where(id: params[:id]).all.first
     else
@@ -311,8 +343,7 @@ class MyServer < Sinatra::Base
    erb :login
   end
 
-  def prepare_post(post)
-    markdown_content = post[:content]
+  def prepare_post(markdown_content)
     html_content = settings.markdown.render(markdown_content)
     return html_content
   end

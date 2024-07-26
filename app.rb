@@ -261,12 +261,21 @@ class MyServer < Sinatra::Base
     end
   end
 
-  get '/files/*' do
-    list_files_and_erb(params['splat'].first)
+  get '/files' do
+    unless current_user.is_admin?
+      redirect '/errror'
+    end
+    erb :file_browser
   end
 
-  get '/files' do
-    list_files_and_erb
+  post '/files/*' do
+    content_type :json
+    list_files_and_json(params['splat'].first).to_json
+  end
+
+  post '/files' do
+    content_type :json
+    list_files_and_json.to_json
   end
 
   get '/getfile/:file' do
@@ -344,17 +353,12 @@ class MyServer < Sinatra::Base
    erb :login
   end
 
-  def list_files_and_erb(path = "")
+  def list_files_and_json(path = "")
     unless current_user.is_admin?
-      redirect '/error'
+      halt 403, { error: 'Forbidden' }.to_json
     end
 
-    @current_path = CGI.unescape(request.path_info)
-    @files = []
     base_folder = File.join(settings.public_folder, 'writeups', path)
-
-    @parent_path = File.dirname(@current_path)
-    @parent_path = '' if @parent_path == settings.public_folder
 
     if Dir.exist?(base_folder)
       entries = Dir.entries(base_folder).select { |entry| entry != '.' && entry != '..' }
@@ -366,18 +370,16 @@ class MyServer < Sinatra::Base
         full_path = File.join(base_folder, entry)
         is_directory = File.directory?(full_path)
         if is_directory
-          folders << { name: entry, is_directory: is_directory }
+          folders << { name: entry, is_directory: true }
         else
-          files << { name: entry, is_directory: is_directory }
+          files << { name: entry, is_directory: false }
         end
       end
 
-      @files = (folders.sort_by { |f| f[:name] } + files.sort_by { |f| f[:name] })
+      { path: CGI.unescape(request.path_info), parent_path: File.dirname(request.path_info), files: (folders.sort_by { |f| f[:name] } + files.sort_by { |f| f[:name] }) }
     else
-      @files = [{ name: "Error: Folder does not exist.", is_directory: false }]
+      { error: "Folder does not exist." }
     end
-
-    erb :file_browser
   end
 
   def find_post_title_by_id(id)

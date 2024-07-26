@@ -74,38 +74,41 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener("click", closeAllSelect);
 
 //Name checker
-const inputElement = document.querySelector('input[name="title"]');
-const errorElement = document.querySelector('p.error');
+  const inputElement = document.querySelector('input[name="title"]');
+  const errorElement = document.querySelector('p.error');
+  let isTitleValid = false;
 
-inputElement.addEventListener('input', function() {
+  inputElement.addEventListener('input', function() {
     const inputValue = inputElement.value;
 
     fetch('/check-title', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ title: inputValue })
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title: inputValue })
     })
     .then(response => response.json())
     .then(data => {
-        if (data.error) {
-            errorElement.textContent = data.error;
-        } else {
-            errorElement.textContent = '';
-        }
+      if (data.error) {
+        errorElement.textContent = data.error;
+        isTitleValid = false;
+      } else {
+        errorElement.textContent = '';
+        isTitleValid = true;
+      }
     })
     .catch(error => {
-        console.error('Error:', error);
-        errorElement.textContent = 'Wystąpił błąd podczas sprawdzania loginu.';
+      console.error('Error:', error);
+      errorElement.textContent = 'Wystąpił błąd podczas sprawdzania tytułu.';
+      isTitleValid = false;
     });
-});
+  });
 
-//JS checking form
   document.getElementById('post-form').addEventListener('submit', function(event) {
-    var title = document.querySelector('input[name="title"]').value.trim();
-    var tags = document.querySelector('input[name="tags"]').value.trim();
-    var categorySelect = document.getElementById('categorySelect').innerHTML;
+    const title = inputElement.value.trim();
+    const tags = document.querySelector('input[name="tags"]').value.trim();
+    const categorySelect = document.getElementById('categorySelect').value;
 
     if (!title) {
       alert('Please enter a title.');
@@ -113,7 +116,13 @@ inputElement.addEventListener('input', function() {
       return;
     }
 
-    if (categorySelect && (categorySelect === "" || categorySelect === "Select category...")) {
+    if (!isTitleValid) {
+      alert('The title is not valid or already exists.');
+      event.preventDefault();
+      return;
+    }
+
+    if (categorySelect === "" || categorySelect === "Select category...") {
       alert('Please select a category.');
       event.preventDefault();
       return;
@@ -125,4 +134,17 @@ inputElement.addEventListener('input', function() {
       return;
     }
   });
+
+  //Category name
+  const categoryInput = _('catg');
+  const categoryParam = document.querySelector('input[name="category"]');
+  if (categoryParam) {
+    if (categoryInput.value !== '') {
+      categoryParam.value = categoryInput.value;
+    }
+    
+    categoryInput.addEventListener('input', function() {
+      categoryParam.value = categoryInput.value;
+    });
+  }
 });

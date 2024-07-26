@@ -70,12 +70,11 @@ class MyServer < Sinatra::Base
 
     if @post
       encoded_title = ERB::Util.url_encode(@post[:title])
-      redirect "/post/#{encoded_title}"
+      redirect "/post/#{encoded_title.downcase}"
     end
 
     @post = $postsDB.where(Sequel.like(:title, params_id, case_insensitive: true)).all.first
     params_id = @post[:id]
-
 
     if @post.nil?
       redirect '/error'
@@ -111,6 +110,7 @@ class MyServer < Sinatra::Base
     if current_user.is_admin?
       @js = ["new-post-js"]
       @categories = []
+      @error = " "
       @post = $postsDB.where(id: params[:id]).all.first
       @categories << @post[:category]
       @tags = @post[:tags]
@@ -165,7 +165,7 @@ class MyServer < Sinatra::Base
   post '/new-post' do
     $postsDB.insert(title: params[:title],
       date: Time.now,
-      tags: params[:tags],
+      tags: params[:tags].strip.squeeze,
       author: current_user[:username],
       category: params[:category],
       content: params[:content],
@@ -174,7 +174,14 @@ class MyServer < Sinatra::Base
   end
 
   post '/edit-post' do
-    params.inspect
+    $postsDB.where(id: params[:id]).update(title: params[:title],
+      edited_date: Time.now,
+      tags: params[:tags].strip.squeeze,
+      author: current_user[:username],
+      category: params[:category],
+      content: params[:content],
+      is_public: params[:is_public])
+    redirect "/post/#{find_post_title_by_id(params[:id])}"
   end
 
   get '/posts-cms' do
@@ -213,7 +220,7 @@ class MyServer < Sinatra::Base
     if title.nil? || title.empty?
         { error: 'Title cannot be empty' }.to_json
       else
-        if $postsDB.select(:title).where(:title => title).all.count > 0
+        if $postsDB.select(:title).where(Sequel.like(:title, title, case_insensitive: true)).all.count > 0
           content_type :json
           { success: false, error: "Post with that title already exists." }.to_json
         else
@@ -321,6 +328,10 @@ class MyServer < Sinatra::Base
    @error = 'Username or password was incorrect.'
    @css = ["login-styles"]
    erb :login
+  end
+
+  def find_post_title_by_id(id)
+    $postsDB.where(id: id).all.first[:title]
   end
 
   def prepare_post(markdown_content)

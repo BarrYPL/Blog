@@ -1,5 +1,3 @@
-# I See
-
 ### First Part
 
 **Figure out what the real task of the challenge is.**

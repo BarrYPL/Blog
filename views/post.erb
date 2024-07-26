@@ -9,5 +9,9 @@
 </div>
 <hr>
 <div class="post-container">
+  <% unless @post[:ctf_name].nil? %>
+    <%= prepare_post(@post[:publish_content]) %>
+    <hr>
+  <% end %>
   <p><%= @post[:content] %></p>
 </div>

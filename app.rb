@@ -261,6 +261,20 @@ class MyServer < Sinatra::Base
     end
   end
 
+  get '/files/*' do
+    list_files_and_erb(params['splat'].first)
+  end
+
+  get '/files' do
+    list_files_and_erb
+  end
+
+  get '/getfile/:file' do
+    #Confirm file download permission
+
+    #send_file files_path, :filename => params[:file], :type => 'Application/octet-stream'
+  end
+
   get '/login' do
     if current_user
       @css = ["home-styles"]
@@ -328,6 +342,42 @@ class MyServer < Sinatra::Base
    @error = 'Username or password was incorrect.'
    @css = ["login-styles"]
    erb :login
+  end
+
+  def list_files_and_erb(path = "")
+    unless current_user.is_admin?
+      redirect '/error'
+    end
+
+    @current_path = CGI.unescape(request.path_info)
+    @files = []
+    base_folder = File.join(settings.public_folder, 'writeups', path)
+
+    @parent_path = File.dirname(@current_path)
+    @parent_path = '' if @parent_path == settings.public_folder
+
+    if Dir.exist?(base_folder)
+      entries = Dir.entries(base_folder).select { |entry| entry != '.' && entry != '..' }
+
+      folders = []
+      files = []
+
+      entries.each do |entry|
+        full_path = File.join(base_folder, entry)
+        is_directory = File.directory?(full_path)
+        if is_directory
+          folders << { name: entry, is_directory: is_directory }
+        else
+          files << { name: entry, is_directory: is_directory }
+        end
+      end
+
+      @files = (folders.sort_by { |f| f[:name] } + files.sort_by { |f| f[:name] })
+    else
+      @files = [{ name: "Error: Folder does not exist.", is_directory: false }]
+    end
+
+    erb :file_browser
   end
 
   def find_post_title_by_id(id)

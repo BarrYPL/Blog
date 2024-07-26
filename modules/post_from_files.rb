@@ -16,14 +16,16 @@ class PostFromFiles
       tags: @tags,
       author: @author,
       category: @category,
-      is_public: @is_public
+      is_public: @is_public,
+      ctf_name: @ctf_name,
+      publish_content: @publish_content
     }
   end
 
   private
 
   def fetch_post_details
-    result = @database.select(:title, :files_path, :date, :tags, :author, :category, :is_public).where(id: @id).first
+    result = @database.select(:title, :files_path, :date, :tags, :author, :category, :is_public, :ctf_name).where(id: @id).first
     if result
       @title = result[:title]
       @path = result[:files_path]
@@ -33,15 +35,25 @@ class PostFromFiles
       @category = result[:category]
       @is_public = result[:is_public]
       @content = File.open("public/writeups/#{@path}/Solve/WRITEUP.md").read
+      @ctf_name = result[:ctf_name]
+      @publish_content = update_links(File.open("public/writeups/#{@path}/README.md").read)
     else
       @title = nil
       @path = nil
       @date = nil
       @tags = nil
-      @content = nil
-      @is_public = nil
-      @category = nil
       @author = nil
+      @category = nil
+      @is_public = nil
+      @content = nil
+      @ctf_name = nil
+      @publish_content = nil
+    end
+  end
+
+  def update_links(text)
+    text.gsub(/\[.*?\]\(.*?\)/) do |match|
+      match.gsub(/\/([^\/)]+)\)/, '/XXX)')
     end
   end
 end

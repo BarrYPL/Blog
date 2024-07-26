@@ -8,6 +8,8 @@ require 'uri'
 require 'sequel'
 require 'bcrypt'
 require 'erb'
+require 'cgi'
+require 'fileutils'
 require_relative './post_from_files.rb'
 
 class NilClass

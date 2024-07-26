@@ -18,6 +18,11 @@ function blur_background(value) {
     contentDiv.style.filter = "blur(" + value + "px)";
 }
 
+function capitalize(str) {
+  if (typeof str !== 'string' || str.length === 0) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 function toggleMenu() {
     var menuRight = document.querySelector('.menu-right');
     isExpanded = menuRight.classList.toggle('menu-right-expanded');
@@ -66,7 +71,7 @@ window.addEventListener("load", function(evt){
 
   async function loopTypeDelete() {
     while (true) {
-      await typeWriter(decodeURI(subpage));
+      await typeWriter(capitalize(decodeURI(subpage)));
       await sleep(2000);
       await deleteWriter();
       await sleep(1000);

@@ -1,0 +1,18 @@
+<h1>>/Admin_browser $</h1>
+<hr>
+<h2><%= @current_path %></h2>
+<ul>
+  <% if @parent_path != '' %>
+    <li><a href="<%= @parent_path %>">cd..</a></li>
+  <% end %>
+  <% @files.each do |file| %>
+    <li>
+      <% if file[:is_directory] %>
+        <i class="fa-solid fa-folder"></i>
+      <% else %>
+        <i class="fa-solid fa-file"></i>
+      <% end %>
+      <a href="<%= File.join(@current_path, file[:name]) %>"><%= file[:name] %></a>
+    </li>
+  <% end %>
+</ul>

@@ -282,10 +282,8 @@ class MyServer < Sinatra::Base
 
   get '/getfile/*' do
     file_path = params[:splat].first
-    puts file_path
     full_path = File.join(settings.public_folder, 'writeups', file_path)
 
-    # Sprawdź, czy plik istnieje i masz pozwolenie na jego pobranie
     if File.exist?(full_path) && has_permission?(full_path)
       send_file full_path, :filename => File.basename(full_path), :type => 'Application/octet-stream'
     else
@@ -356,6 +354,7 @@ class MyServer < Sinatra::Base
   end
 
   def has_permission?(file_path)
+    puts file_path
     if current_user.is_admin?
       return true
     else

@@ -22,8 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
     currentPathDisplay.innerHTML = data.path;
     if (data.parent_path !== '/') {
       const parentLi = document.createElement('li');
-      parentLi.classList.add('cd-button');
-      parentLi.innerHTML = `<a href="#" data-path="${data.parent_path}" class="main-button">cd..</a>`;
+      parentLi.classList.add('li-buttons');
+      parentLi.innerHTML = `<a href="#" data-path="${data.parent_path}" class="main-button">cd..</a>
+      <a href="#" class="main-button"><button type="submit">publish</button></a>`;
       fileTree.appendChild(parentLi);
     }
     data.files.forEach(file => {

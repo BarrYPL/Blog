@@ -1,0 +1,16 @@
+Alicja: Hej, udało mi się zdobyć kolejną flagę z H@ckademy
+Bob: O, podeślij plis
+Alicja: Spoko, tylko na wszelki wypadek ją zaszyfruję, kto wie kto może podsłuchiwać.
+Bob: Ok
+Alicja: Użyjmy naszego niezawodnego skryptu do wymiany sekretów. No ten Diffie Helman.
+Bob: Ah, nasz pierwszy projekt w Pytongu. 
+Alicja: Dobra wysyłam dane:
+	g=577
+	p=10332921861938291919377635159012636040519117927041835671194203494937679183911345052843111512544303969800681115505917911462916407940308340306260755239268943
+	A=8370337962458643162004582468469045984889816058567658904788530882468973454873284491037710219222503893094363658486261941098330951794393018216763327572119677
+Bob: B=9755909033513767641159594933585734179714892615169429957597029280980531443144704341694474385957669949989090202320232433789032328934018623049865998847328154
+Alicja: Łap zaszyfrowaną flagę.
+UYaG0KR+k8SmDn9ag/LV9u8h76iXpy6n5D7u00Y3rU/+suuGWSvm6J1ajXO2HxGgt6gyDFtNUZnsgfxGBAysGg==
+Bob: Dzięki wielkie. Dzięki naszej bezbłędnej implementacji Diffie Helmana nie ma szans żeby ktoś ją rozszyfrował hehe
+
+

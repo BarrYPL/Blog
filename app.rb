@@ -262,6 +262,8 @@ class MyServer < Sinatra::Base
   end
 
   get '/files' do
+    @css = ["files-styles"]
+    @js = ["files-js"]
     unless current_user.is_admin?
       redirect '/errror'
     end
@@ -278,10 +280,17 @@ class MyServer < Sinatra::Base
     list_files_and_json.to_json
   end
 
-  get '/getfile/:file' do
-    #Confirm file download permission
+  get '/getfile/*' do
+    file_path = params[:splat].first
+    puts file_path
+    full_path = File.join(settings.public_folder, 'writeups', file_path)
 
-    #send_file files_path, :filename => params[:file], :type => 'Application/octet-stream'
+    # Sprawdź, czy plik istnieje i masz pozwolenie na jego pobranie
+    if File.exist?(full_path) && has_permission?(full_path)
+      send_file full_path, :filename => File.basename(full_path), :type => 'Application/octet-stream'
+    else
+      halt 404, "File not found or permission denied"
+    end
   end
 
   get '/login' do
@@ -344,6 +353,15 @@ class MyServer < Sinatra::Base
 
     content_type :json
     { errors: errors }.to_json
+  end
+
+  def has_permission?(file_path)
+    if current_user.is_admin?
+      return true
+    else
+      #rest of the logic - for now only for admins
+      return false
+    end
   end
 
   def login_failed

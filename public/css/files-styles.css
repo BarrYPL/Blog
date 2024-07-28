@@ -1,0 +1,23 @@
+ul {
+  list-style-type: none;
+}
+
+.folder {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.file-browser-container {
+  width: 100%;
+}
+
+.browser-header {
+  margin: 10px 0px;
+}
+
+.cd-button {
+  margin-bottom: 10px;
+}

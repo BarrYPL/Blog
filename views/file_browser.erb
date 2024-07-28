@@ -1,59 +1,8 @@
-<style>
-  ul { list-style-type: none; }
-  .folder { cursor: pointer; }
-  .hidden { display: none; }
-</style>
 <h1>>/Admin_browser $</h1>
 <hr>
-<div id="file-browser">
+<div class="file-browser-container">
+  <div class="browser-header">
+    <h3 id="current-path"></h3>
+  </div>
   <ul id="file-tree"></ul>
 </div>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const fileTree = document.getElementById('file-tree');
-
-    function fetchFiles(path = '') {
-      fetch(`${path}`, {
-        method: 'POST',
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.error) {
-            alert(data.error);
-          } else {
-            renderFiles(data);
-          }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-
-    function renderFiles(data) {
-      fileTree.innerHTML = '';
-      if (data.parent_path !== '/') {
-        const parentLi = document.createElement('li');
-        parentLi.innerHTML = `<a href="#" data-path="${data.parent_path}">cd..</a>`;
-        fileTree.appendChild(parentLi);
-      }
-      data.files.forEach(file => {
-        const li = document.createElement('li');
-        if (file.is_directory) {
-          li.classList.add('folder');
-          li.innerHTML = `<i class="fa-solid fa-folder"></i> <a href="#" data-path="${data.path}/${file.name}">${file.name}</a>`;
-        } else {
-          li.innerHTML = `<i class="fa-solid fa-file"></i> ${file.name}`;
-        }
-        fileTree.appendChild(li);
-      });
-    }
-
-    fileTree.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A') {
-        e.preventDefault();
-        const path = e.target.getAttribute('data-path');
-        fetchFiles(path);
-      }
-    });
-
-    fetchFiles();
-  });
-</script>

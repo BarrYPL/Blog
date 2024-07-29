@@ -195,6 +195,15 @@ class MyServer < Sinatra::Base
     redirect '/error'
   end
 
+  get '/admin' do
+    if current_user.is_admin?
+      @css = ["admin-styles"]
+      return erb :admin
+    end
+
+    redirect '/error'
+  end
+
   post '/publish' do
     post_id = params[:post_id]
     button_value = params[:button]

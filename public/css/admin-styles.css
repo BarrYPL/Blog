@@ -1,0 +1,43 @@
+.admin-panel{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.card{
+  width: 250px;
+  height: 150px;
+  background: #ddd;
+  border-radius: 10px;
+  margin: 10px 15px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card h2{
+  text-transform: uppercase;
+}
+
+.inner-card{
+  display: flex;
+  justify-content: space-between;
+}
+
+.inverse-btn {
+  color: #121212;
+  padding: 5px;
+  border: solid 2px #f1f1f1;
+  border-radius: 10px;
+  background: #f1f1f1;
+  transition: all .3s ease-in-out;
+}
+
+.inverse-btn:hover{
+  color: #f1f1f1;
+  background: #121212;
+  border: 2px solid #121212;
+  cursor: pointer;
+}

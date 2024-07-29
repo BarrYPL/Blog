@@ -1,0 +1,22 @@
+<h1>>/Files CMS $</h1>
+<hr>
+<table>
+  <tr>
+    <th>Lp.</th>
+    <th>Name</th>
+    <th>Path</th>
+    <th>Owner</th>
+    <th>Public</th>
+    <th>Actions</th>
+  </tr>
+  <% $filesDB.each_with_index do |file, idx| %>
+    <tr>
+      <td><%= idx + 1 %>.</td>
+      <td><a href="#"><%= file[:name].titleize %></a></td>
+      <td><%= file[:path] %></td>
+      <td><%= file[:owner] %></td>
+      <td><%= file[:permission] %></td>
+      <td></td>
+    </tr>
+  <% end %>
+</table>

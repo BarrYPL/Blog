@@ -195,6 +195,15 @@ class MyServer < Sinatra::Base
     redirect '/error'
   end
 
+  get '/files-cms' do
+    if current_user.is_admin?
+      @css = ["cms-styles"]
+      return erb :files_cms
+    end
+
+    redirect '/error'
+  end
+
   get '/admin' do
     if current_user.is_admin?
       @css = ["admin-styles"]

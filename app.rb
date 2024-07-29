@@ -354,6 +354,20 @@ class MyServer < Sinatra::Base
     end
   end
 
+  post '/rmdir/*' do
+    unless current_user.is_admin?
+      return { error: "403 Forbidden" }.to_json
+    end
+
+    dir_path = params[:splat].first.gsub('files/', '')
+    full_dir_path = File.join(settings.public_folder, 'writeups', dir_path)
+    if File.exist?(full_dir_path) && File.directory?(full_dir_path)
+      FileUtils.rm_rf(full_dir_path)
+      { success: true, message: "File successfully deleted" }.to_json
+    else
+      { success: false, error: "Dir not found or permission denied" }.to_json
+    end
+  end
 
   get '/login' do
     if current_user

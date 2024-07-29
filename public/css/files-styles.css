@@ -70,3 +70,7 @@ td a:hover::after{
 #options-div {
   margin-top: 10px;
 }
+
+#options-div a{
+  margin-right: 10px;
+}

@@ -18,6 +18,23 @@ document.addEventListener('DOMContentLoaded', function () {
       .catch(error => console.error('Error:', error));
   }
 
+  function deleteCurrentDir(path) {
+    if (confirm('Are you sure you want to delete this directory?')) {
+    fetch(`/rmdir${path}`, {
+      method: 'POST',
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+        } else {
+          fetchFiles();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  }
+
   function handleBookmarkClick(event) {
     event.preventDefault();
     const path = event.currentTarget.getAttribute('data-path');
@@ -82,6 +99,25 @@ document.addEventListener('DOMContentLoaded', function () {
       optionsDiv.innerHTML = `<a href="#" data-path="${data.parent_path}" class="main-button">cd..</a>`;
     }
 
+    const mkdir = document.createElement('a');
+    mkdir.href = '#';
+    mkdir.dataset.path = data.path;
+    mkdir.className = 'main-button';
+    mkdir.textContent = 'MKDIR';
+    mkdir.id = "mkdir-button";
+
+    optionsDiv.appendChild(mkdir);
+
+    if (data.files.length === 0) {
+      const rmdir = document.createElement('a');
+      rmdir.href = '#';
+      rmdir.dataset.path = data.path;
+      rmdir.className = 'main-button';
+      rmdir.textContent = 'RMDIR';
+      rmdir.id = "rmdir-button";
+      optionsDiv.appendChild(rmdir);
+    }
+
     data.files.forEach(file => {
       const row = document.createElement('tr');
       if (file.is_directory) {
@@ -116,6 +152,15 @@ document.addEventListener('DOMContentLoaded', function () {
     deleteLinks.forEach(icon => {
       icon.parentElement.addEventListener('click', handleDeleteClick);
     });
+
+    const rmdirButton = _('rmdir-button');
+    if (rmdirButton) {
+      rmdirButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        const path = e.target.getAttribute('data-path');
+        deleteCurrentDir(path);
+      });
+    }
   }
 
   document.querySelector('.file-browser-container').addEventListener('click', function (e) {

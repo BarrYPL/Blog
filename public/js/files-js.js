@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileTableBody = document.querySelector('#file-table tbody');
   const currentPathDisplay = document.getElementById('current-path');
   const optionsDiv = document.getElementById('options-div');
+  const dropZone = document.getElementById('drop-zone');
   let multiDeleteButton;
 
   async function fetchFiles(path = '') {
@@ -263,4 +264,57 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   fetchFiles();
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+  });
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+  });
+  dropZone.addEventListener('drop', handleDrop, false);
+
+  function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+
+    handleFiles(files);
+  }
+
+  function handleFiles(files) {
+    [...files].forEach(uploadFile);
+  }
+
+  function uploadFile(file) {
+    const url = '/files-upload';
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('path', currentPathDisplay.textContent.replace('/files', ''));
+
+    fetch(url, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('File uploaded successfully');
+        fetchFiles(currentPathDisplay.textContent);
+      } else {
+        alert('File upload failed');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
 });

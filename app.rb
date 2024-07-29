@@ -300,18 +300,30 @@ class MyServer < Sinatra::Base
 
   get '/getfile/*' do
     file_path = params[:splat].first
-    full_path = File.join(settings.public_folder, 'writeups', file_path)
-
-    if File.exist?(full_path) && has_permission?(full_path)
-      send_file full_path, :filename => File.basename(full_path), :type => 'Application/octet-stream'
-    else
-      redirect '/file-error'
-    end
+    get_file(file_path)
   end
 
   get '/post/getfile/*' do
     file_path = params[:splat].first
-    redirect to("/getfile/#{file_path}")
+    get_file(file_path)
+  end
+
+  post '/files-upload' do
+    content_type :json
+
+    if params[:file]
+      path = params[:path]
+      file_name = params[:file][:filename]
+      file = params[:file][:tempfile]
+      file_path = File.join(settings.public_folder, 'writeups', path, file_name)
+
+      File.open(file_path, 'wb') do |f|
+        f.write(file.read)
+      end
+      { success: true, message: 'File uploaded successfully', filename: file_name }.to_json
+    else
+      { success: false, message: 'No file uploaded' }.to_json
+    end
   end
 
   post '/manage-files' do
@@ -493,6 +505,16 @@ class MyServer < Sinatra::Base
    @error = 'Username or password was incorrect.'
    @css = ["login-styles"]
    erb :login
+  end
+
+  def get_file(file_path)
+    full_path = File.join(settings.public_folder, 'writeups', file_path)
+
+    if File.exist?(full_path) && has_permission?(full_path)
+      send_file full_path, :filename => File.basename(full_path), :type => 'Application/octet-stream'
+    else
+      redirect '/file-error'
+    end
   end
 
   def list_files_and_json(path = "")

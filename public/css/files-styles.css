@@ -29,6 +29,7 @@ a button{
 td a{
   border:none;
   position: relative;
+  padding-right: 5px;
 }
 
 td a:hover{

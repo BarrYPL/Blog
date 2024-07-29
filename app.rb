@@ -233,7 +233,6 @@ class MyServer < Sinatra::Base
   end
 
   post '/check-title' do
-    request.body.rewind
     data = JSON.parse(request.body.read)
     title = data['title'].strip.downcase
     if title.nil? || title.empty?
@@ -322,7 +321,6 @@ class MyServer < Sinatra::Base
       return { error: "403 Forbidden" }.to_json
     end
 
-    request.body.rewind
     data = JSON.parse(request.body.read)
     action = data['action']
     full_path = File.join(settings.public_folder, 'writeups', data['path'])
@@ -352,14 +350,33 @@ class MyServer < Sinatra::Base
     when "delete"
       if File.exist?(full_path) && has_permission?(full_path)
         File.delete(full_path)
-        $filesDB.where(path: full_path).delete
+        unless find_file_in_db(full_path).nil?
+          $filesDB.where(path: full_path).delete
+        end
+        { success: true, message: "File successfully deleted" }.to_json
+      else
+        { error: "File not found or permission denied" }.to_json
+      end
+
+    when "rename"
+      dir_path = data["path"]
+      new_path = data["newPath"]
+
+      full_file_path = File.join(settings.public_folder, 'writeups', dir_path)
+      new_file_path = File.join(settings.public_folder, 'writeups', new_path)
+
+      if File.exist?(full_path) && has_permission?(full_path)
+        File.rename(full_file_path, new_file_path)
+        unless find_file_in_db(full_file_path).nil?
+          $filesDB.where(path: full_file_path).update(path: new_file_path, name: File.basename(new_file_path))
+        end
         { success: true, message: "File successfully deleted" }.to_json
       else
         { error: "File not found or permission denied" }.to_json
       end
 
     else
-      { error: "Invalid action" }.to_json
+      { error: "Invalid action: #{action}" }.to_json
     end
   end
 
@@ -368,7 +385,7 @@ class MyServer < Sinatra::Base
       return { error: "403 Forbidden" }.to_json
     end
 
-    dir_path = params[:splat].first.gsub('files/', '')
+    dir_path = params[:splat].first
     full_dir_path = File.join(settings.public_folder, 'writeups', dir_path)
     if File.exist?(full_dir_path) && File.directory?(full_dir_path)
       FileUtils.rm_rf(full_dir_path)
@@ -385,7 +402,6 @@ class MyServer < Sinatra::Base
       return { error: "403 Forbidden" }.to_json
     end
 
-    request.body.rewind
     data = JSON.parse(request.body.read)
     data_path = data["path"].gsub('/files','')
     data_name = data["name"]
@@ -447,7 +463,6 @@ class MyServer < Sinatra::Base
 
 #Spellcheck kinda works for now
   post '/spellcheck' do
-    request.body.rewind
     request_payload = JSON.parse(request.body.read)
     text = request_payload['content']
     uri = URI.parse("https://api.languagetool.org/v2/check")

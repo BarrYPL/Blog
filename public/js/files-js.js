@@ -35,6 +35,28 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  function createNewDir(currentPath) {
+    const dirName = prompt('Enter the name of the new directory:');
+    if (dirName) {
+      fetch('/mkdir', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ path: currentPath, name: dirName })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.error);
+          } else {
+            fetchFiles(currentPath);
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  }
+
   function handleBookmarkClick(event) {
     event.preventDefault();
     const path = event.currentTarget.getAttribute('data-path');
@@ -159,6 +181,15 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         const path = e.target.getAttribute('data-path');
         deleteCurrentDir(path);
+      });
+    }
+
+    const mkdirButton = _('mkdir-button');
+    if (mkdirButton) {
+      mkdirButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        const path = e.target.getAttribute('data-path');
+        createNewDir(path);
       });
     }
   }

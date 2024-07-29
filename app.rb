@@ -369,6 +369,26 @@ class MyServer < Sinatra::Base
     end
   end
 
+  post '/mkdir' do
+    content_type :json
+
+    unless current_user.is_admin?
+      return { error: "403 Forbidden" }.to_json
+    end
+
+    request.body.rewind
+    data = JSON.parse(request.body.read)
+    data_path = data["path"].gsub('/files','')
+    data_name = data["name"]
+    new_dir_path = File.join(settings.public_folder, 'writeups', data_path, data_name)
+    if Dir.exist?(new_dir_path)
+      { error: 'Directory already exists' }.to_json
+    else
+      Dir.mkdir(new_dir_path)
+      { success: true }.to_json
+    end
+  end
+
   get '/login' do
     if current_user
       @css = ["home-styles"]

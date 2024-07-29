@@ -288,7 +288,7 @@ class MyServer < Sinatra::Base
     if File.exist?(full_path) && has_permission?(full_path)
       send_file full_path, :filename => File.basename(full_path), :type => 'Application/octet-stream'
     else
-      halt 404, "File not found or permission denied"
+      redirect '/file-error'
     end
   end
 
@@ -386,6 +386,11 @@ class MyServer < Sinatra::Base
   get '/error' do
     @css = ["error404-styles"]
     erb :error404
+  end
+
+  get '/file-error' do
+    @css = ["error404-styles"]
+    erb :file_error
   end
 
 #Spellcheck kinda works for now

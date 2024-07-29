@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const fileTree = document.getElementById('file-tree');
-  const currentPathDisplay = document.getElementById('current-path');
+  const fileTableBody = document.querySelector('#file-table tbody');
+  const currentPathDisplay = _('current-path');
+  const optionsDiv = _('options-div');
 
   function fetchFiles(path = '') {
     fetch(`${path}`, {
@@ -17,33 +18,108 @@ document.addEventListener('DOMContentLoaded', function () {
       .catch(error => console.error('Error:', error));
   }
 
-  function renderFiles(data) {
-    fileTree.innerHTML = '';
-    currentPathDisplay.innerHTML = data.path;
-    if (data.parent_path !== '/') {
-      const parentLi = document.createElement('li');
-      parentLi.classList.add('li-buttons');
-      parentLi.innerHTML = `<a href="#" data-path="${data.parent_path}" class="main-button">cd..</a>
-      <a href="#" class="main-button"><button type="submit">publish</button></a>`;
-      fileTree.appendChild(parentLi);
+  function handleBookmarkClick(event) {
+    event.preventDefault();
+    const path = event.currentTarget.getAttribute('data-path');
+    const icon = event.currentTarget.querySelector('i');
+    const action = icon.classList.contains('fa-regular') ? 'publish' : 'hide';
+
+    fetch('/manage-files', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ path: path, action: action })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          if (icon.classList.contains('fa-regular')) {
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+          } else {
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-regular');
+          }
+        } else {
+          alert('Failed to publish/unpublish file');
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+  function handleDeleteClick(event) {
+    event.preventDefault();
+    const path = event.currentTarget.getAttribute('data-path');
+
+    if (confirm('Are you sure you want to delete this file?')) {
+      fetch('/manage-files', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ path: path, action: 'delete' })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('File successfully deleted');
+            fetchFiles(currentPathDisplay.textContent); // Refresh the file list
+          } else {
+            alert('Failed to delete file: ' + data.error);
+          }
+        })
+        .catch(error => console.error('Error:', error));
     }
+  }
+
+  function renderFiles(data) {
+    fileTableBody.innerHTML = '';
+    currentPathDisplay.innerHTML = data.path;
+
+    optionsDiv.innerHTML = '';
+    if (data.parent_path !== '/') {
+      optionsDiv.innerHTML = `<a href="#" data-path="${data.parent_path}" class="main-button">cd..</a>`;
+    }
+
     data.files.forEach(file => {
-      const li = document.createElement('li');
+      const row = document.createElement('tr');
       if (file.is_directory) {
-        li.classList.add('folder');
-        li.innerHTML = `<a href="#" data-path="${data.path}/${file.name}"><i class="fa-solid fa-folder"></i> ${file.name}</a>`;
+        row.classList.add('folder');
+        row.innerHTML = `
+          <td><a href="#" data-path="${data.path}/${file.name}">${file.name}</a></td>
+          <td><i class="fa-solid fa-folder"></i></td>
+          <td></td>
+        `;
       } else {
         const fullPath = `${data.path}/${file.name}`;
-        li.classList.add('file');
-        li.innerHTML = `<a href="/getfile${fullPath.replace('/files', '')}" class="file-link"><i class="fa-solid fa-file"></i> ${file.name}</a>`;
+        const bookmarkClass = file.is_public ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark';
+        row.classList.add('file');
+        row.innerHTML = `
+          <td><a href="/getfile${fullPath.replace('/files', '')}" class="file-link">${file.name}</a></td>
+          <td><i class="fa-solid fa-file"></i></td>
+          <td>
+            <a href="#" data-path="${fullPath.replace('/files', '')}"><i class="fa-solid fa-trash"></i></a>
+            <a href="#" data-path="${fullPath.replace('/files', '')}" class="bookmark-link"><i class="${bookmarkClass}"></i></a>
+          </td>
+        `;
       }
-      fileTree.appendChild(li);
+      fileTableBody.appendChild(row);
+    });
+
+    const bookmarkLinks = document.querySelectorAll('.bookmark-link');
+    bookmarkLinks.forEach(link => {
+      link.addEventListener('click', handleBookmarkClick);
+    });
+
+    const deleteLinks = document.querySelectorAll('.fa-trash');
+    deleteLinks.forEach(icon => {
+      icon.parentElement.addEventListener('click', handleDeleteClick);
     });
   }
 
-  fileTree.addEventListener('click', function (e) {
+  document.querySelector('.file-browser-container').addEventListener('click', function (e) {
     if (e.target.tagName === 'A' && e.target.classList.contains('file-link')) {
-      // Allow default behavior for file links
       return;
     }
     if (e.target.tagName === 'A') {

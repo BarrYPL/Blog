@@ -52,8 +52,8 @@ class PostFromFiles
   end
 
   def update_links(text)
-    text.gsub(/\[.*?\]\(.*?\)/) do |match|
-      match.gsub(/\/([^\/)]+)\)/, '/XXX)')
-    end
+    old_link = text.match(/(?<=\/)[^)]*\/[^)]*(?=\))/) #Match [./file/name] as file/name
+    updated_link =  "getfile/#{@path.gsub('\\','/')}#{old_link}".gsub(" ","%20") #Makes link to getfile endpoint
+    text.gsub(/(?<=\()[^)]*(?=\))/, updated_link)
   end
 end

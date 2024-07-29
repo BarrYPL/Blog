@@ -2,6 +2,23 @@ ul {
   list-style-type: none;
 }
 
+table, th, td {
+  border-bottom: 1px solid #999;
+  border-collapse: collapse;
+}
+
+th {
+  background: #121212;
+  max-width: 200px;
+  overflow: hidden;
+  padding: 10px;
+  color: #fafafa;
+}
+
+td {
+  padding: 15px;
+}
+
 a button{
   outline: none;
   background: transparent;
@@ -9,8 +26,29 @@ a button{
   color: #fafafa;
 }
 
-.folder {
-  cursor: pointer;
+td a{
+  border:none;
+  position: relative;
+}
+
+td a:hover{
+  border: none;
+}
+
+td a::after{
+  content: '';
+  position: absolute;
+  width: 0px;
+  height: 1px;
+  left: 50%;
+  bottom:0;
+  background-color: #121212;
+  transition: all ease-in-out .2s;
+}
+
+td a:hover::after{
+  width: 100%;
+  left: 0;
 }
 
 .hidden {
@@ -27,4 +65,8 @@ a button{
 
 .li-buttons {
   margin-bottom: 10px;
+}
+
+#options-div {
+  margin-top: 10px;
 }

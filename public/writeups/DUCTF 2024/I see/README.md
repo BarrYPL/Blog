@@ -11,4 +11,4 @@ We suggest you solve this challenge before attempting any others.
 
 ## Handout files
 
-[schematic.pdf](./publish/schematic.pdf)
+[schematic.pdf](./Publish/schematic.pdf)

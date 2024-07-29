@@ -3,6 +3,7 @@ require_relative('modules/imports')
 DB = Sequel.sqlite 'db/database.db'
 $usersDB = DB[:users]
 $postsDB = DB[:posts]
+$filesDB = DB[:files]
 
 class HTMLWithPygments < Redcarpet::Render::HTML
   include Rouge::Plugins::Redcarpet
@@ -291,6 +292,60 @@ class MyServer < Sinatra::Base
     end
   end
 
+  get '/post/getfile/*' do
+    file_path = params[:splat].first
+    redirect to("/getfile/#{file_path}")
+  end
+
+  post '/manage-files' do
+    content_type :json
+
+    unless current_user.is_admin?
+      return { error: "403 Forbidden" }.to_json
+    end
+
+    request.body.rewind
+    data = JSON.parse(request.body.read)
+    action = data['action']
+    full_path = File.join(settings.public_folder, 'writeups', data['path'])
+    file = find_file_in_db(full_path) # Hash or nil
+
+    case action
+    when "publish"
+      if file
+        # Update permission in DB
+        $filesDB.where(path: full_path).update(permission: 1)
+      else
+        # Add permitted file to DB
+        file_name = File.basename(full_path)
+        $filesDB.insert(name: file_name, path: full_path, owner: current_user[:username], permission: 1)
+      end
+      { success: true, message: "File published" }.to_json
+
+    when "hide"
+      if file
+        $filesDB.where(path: full_path).update(permission: 0)
+        { success: true, message: "File hidden" }.to_json
+      else
+        # Error, you can't hide file that wasn't published in DB.
+        { error: "File untracked" }.to_json
+      end
+
+    when "delete"
+      if File.exist?(full_path) && has_permission?(full_path)
+        File.delete(full_path)
+        $filesDB.where(path: full_path).delete
+        { success: true, message: "File successfully deleted" }.to_json
+      else
+        { error: "File not found or permission denied" }.to_json
+      end
+
+    else
+      { error: "Invalid action" }.to_json
+    end
+  end
+
+
   get '/login' do
     if current_user
       @css = ["home-styles"]
@@ -354,12 +409,10 @@ class MyServer < Sinatra::Base
   end
 
   def has_permission?(file_path)
-    puts file_path
     if current_user.is_admin?
       return true
     else
-      #rest of the logic - for now only for admins
-      return false
+      return check_is_file_published(file_path)
     end
   end
 
@@ -386,16 +439,31 @@ class MyServer < Sinatra::Base
       entries.each do |entry|
         full_path = File.join(base_folder, entry)
         is_directory = File.directory?(full_path)
+        is_published = check_is_file_published(full_path)
         if is_directory
           folders << { name: entry, is_directory: true }
         else
-          files << { name: entry, is_directory: false }
+          files << { name: entry, is_directory: false, is_public: is_published }
         end
       end
 
       { path: CGI.unescape(request.path_info), parent_path: File.dirname(request.path_info), files: (folders.sort_by { |f| f[:name] } + files.sort_by { |f| f[:name] }) }
     else
       { error: "Folder does not exist." }
+    end
+  end
+
+  def find_file_in_db(full_path)
+    $filesDB.where(path: full_path).all.first
+  end
+
+  def check_is_file_published(full_path)
+    #Add here Sequel like with case insensitive it it's gonna make more troubles
+    perm = $filesDB.select(:permission).where(path: full_path).first[:permission]
+    if perm == 1
+      return true
+    else
+      return false
     end
   end
 

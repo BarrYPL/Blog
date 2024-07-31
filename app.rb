@@ -329,81 +329,80 @@ class MyServer < Sinatra::Base
   post '/manage-files' do
     content_type :json
 
-    unless current_user.is_admin?
-      return { error: "403 Forbidden" }.to_json
-    end
+    return { error: "403 Forbidden" }.to_json unless current_user.is_admin?
 
     data = JSON.parse(request.body.read)
     action = data['action']
-    full_path = File.join(settings.public_folder, 'writeups', data['path'])
-    file = find_file_in_db(full_path) # Hash or nil
+    file_path = data['path']
+    full_path = File.join(settings.public_folder, 'writeups', file_path)
+    file = find_file_in_db(full_path)
+
+    def update_db(path, updates)
+      $filesDB.where(path: path).update(updates)
+    end
+
+    def json_response(success:, message:, error: nil)
+      { success: success, message: message, error: error }.compact.to_json
+    end
+
+    def file_operation_exists_and_permitted?(path)
+      File.exist?(path) && has_permission?(path)
+    end
 
     case action
     when "publish"
       if file
-        # Update permission in DB
-        $filesDB.where(path: full_path).update(permission: 1)
+        update_db(full_path, permission: 1)
       else
-        # Add permitted file to DB
-        file_name = File.basename(full_path)
-        $filesDB.insert(name: file_name, path: full_path, owner: current_user[:username], permission: 1)
+        $filesDB.insert(name: File.basename(full_path), path: full_path, owner: current_user[:username], permission: 1)
       end
-      { success: true, message: "File published" }.to_json
+      json_response(success: true, message: "File published")
 
     when "hide"
       if file
-        $filesDB.where(path: full_path).update(permission: 0)
-        { success: true, message: "File hidden" }.to_json
+        update_db(full_path, permission: 0)
+        json_response(success: true, message: "File hidden")
       else
-        # Error, you can't hide file that wasn't published in DB.
-        { error: "File untracked" }.to_json
+        json_response(success: false, error: "File untracked")
       end
 
     when "delete"
-      if File.exist?(full_path) && has_permission?(full_path)
+      if file_operation_exists_and_permitted?(full_path)
         File.delete(full_path)
-        unless find_file_in_db(full_path).nil?
-          $filesDB.where(path: full_path).delete
-        end
-        { success: true, message: "File successfully deleted" }.to_json
+        $filesDB.where(path: full_path).delete if file
+        json_response(success: true, message: "File successfully deleted")
       else
-        { error: "File not found or permission denied" }.to_json
+        json_response(success: false, error: "File not found or permission denied")
       end
 
     when "rename"
-      file_path = data["path"]
-      new_path = data["newPath"]
+      new_path = data['newPath']
+      full_new_path = File.join(settings.public_folder, 'writeups', new_path)
 
-      full_file_path = File.join(settings.public_folder, 'writeups', file_path)
-      new_file_path = File.join(settings.public_folder, 'writeups', new_path)
-
-      if File.exist?(full_path) && has_permission?(full_path)
-        File.rename(full_file_path, new_file_path)
-        unless find_file_in_db(full_file_path).nil?
-          $filesDB.where(path: full_file_path).update(path: new_file_path, name: File.basename(new_file_path))
-        end
-        { success: true, message: "File successfully deleted" }.to_json
+      if file_operation_exists_and_permitted?(full_path)
+        File.rename(full_path, full_new_path)
+        update_db(full_path, path: full_new_path, name: File.basename(full_new_path)) if file
+        json_response(success: true, message: "File successfully renamed")
       else
-        { error: "File not found or permission denied" }.to_json
+        json_response(success: false, error: "File not found or permission denied")
       end
 
-      when "unzip"
-        file_path = data["path"]
-        location = data["currentPath"]
+    when "unzip"
+      location = data['currentPath']
+      full_location_path = File.join(settings.public_folder, 'writeups', location)
 
-        full_file_path = File.join(settings.public_folder, 'writeups', file_path)
-        full_location_path = File.join(settings.public_folder, 'writeups', location)
+      if file_operation_exists_and_permitted?(full_path)
+        file_count = unzip_file(full_path, full_location_path)
+        json_response(success: true, message: "#{file_count} file(s) unzipped successfully")
+      else
+        json_response(success: false, error: "File not found or permission denied")
+      end
 
-        if File.exist?(full_file_path) && has_permission?(full_file_path)
-          file_count = unzip_file(full_file_path, full_location_path)
-          { success: true, message: "#{file_count} file(s) unzipped successfully" }.to_json
-        else
-          { error: "File not found or permission denied" }.to_json
-        end
     else
-      { error: "Invalid action: #{action}" }.to_json
+      json_response(success: false, error: "Invalid action: #{action}")
     end
   end
+
 
   post '/rmdir/*' do
     unless current_user.is_admin?

@@ -3,13 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentPathDisplay = document.getElementById('current-path');
   const optionsDiv = document.getElementById('options-div');
   const dropZone = document.getElementById('drop-zone');
-  const targetElement = document.getElementById('target-element');
   const customMenu = document.getElementById('custom-menu');
   let multiDeleteButton;
+  let currentPath = '';
 
   async function fetchFiles(path = '') {
     try {
-      const response = await fetch(`${path}`, { method: 'POST' });
+      const response = await fetch(path, { method: 'POST' });
       const data = await response.json();
       if (data.error) {
         alert(data.error);
@@ -27,21 +27,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventDataPath = event.target.getAttribute('data-path');
     const menuItems = ['unzip', 'rename', 'delete', 'pub'];
 
-    menuItems.forEach(item => _(item).setAttribute('data-path', eventDataPath));
+    menuItems.forEach(item => document.getElementById(item).setAttribute('data-path', eventDataPath));
 
     const clickX = event.pageX;
     const clickY = event.pageY;
-    const isPublic = event.currentTarget.getAttribute('is_public');
+    const isPublic = event.currentTarget.getAttribute('is_public') === 'true';
 
-    _('pub').innerHTML = isPublic
-      ? `<i class="fa-regular fa-bookmark"></i> Publish`
-      : `<i class="fa-solid fa-bookmark"></i> Unpublish`;
+    document.getElementById('pub').innerHTML = isPublic
+      ? `<i class="fa-solid fa-bookmark"></i> Hide`
+      : `<i class="fa-regular fa-bookmark"></i> Publish`;
 
     customMenu.style.left = `${clickX}px`;
     customMenu.style.top = `${clickY}px`;
     customMenu.style.display = 'block';
   }
-
 
   function hideCustomMenu() {
     customMenu.style.display = 'none';
@@ -74,15 +73,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return element;
   }
 
-  async function unzipFile() {
+  async function unzipFile(event) {
     const path = event.currentTarget.getAttribute('data-path');
-    let currentPath = _('current-path').innerHTML.replace('/files','');
-    if (currentPath.length === 0) { currentPath = '/'; }
-    const data = await handleFileOperation('/manage-files', { path, currentPath: currentPath, action: 'unzip'});
+    let currentPath = currentPathDisplay.textContent.replace('/files', '');
+    if (!currentPath.length) { currentPath = '/'; }
+    const data = await handleFileOperation('/manage-files', { path, currentPath, action: 'unzip' });
     if (data.error) {
-      alert(data.error)
+      alert(data.error);
     } else {
-      fetchFiles(_('current-path').innerHTML);
+      fetchFiles(currentPathDisplay.textContent);
     }
   }
 
@@ -117,8 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = await handleFileOperation('/manage-files', { path, action });
 
     if (data.success) {
-      icon.classList.toggle('fa-regular');
-      icon.classList.toggle('fa-solid');
+      fetchFiles(currentPathDisplay.textContent);
     } else {
       alert('Failed to publish/unpublish file');
     }
@@ -180,7 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
     const checkboxes = document.querySelectorAll('#file-table tbody input[type="checkbox"]:checked');
     const paths = Array.from(checkboxes).map(checkbox => checkbox.value);
-    const currentPath = currentPathDisplay.textContent;
 
     if (paths.length > 0 && confirm('Are you sure you want to delete these files?')) {
       let successCount = 0;
@@ -198,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alert(`${successCount} out of ${paths.length} files successfully deleted`);
       }
 
-      fetchFiles(currentPath); // Ensure we are passing the correct path
+      fetchFiles(currentPathDisplay.textContent); // Ensure we are passing the correct path
     }
   }
 
@@ -294,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     fileTableBody.querySelectorAll('.file-link').forEach(link => {
-        link.addEventListener('contextmenu', showCustomMenu);
+      link.addEventListener('contextmenu', showCustomMenu);
     });
   }
 
@@ -308,28 +305,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.addEventListener('click', function (event) {
+  document.addEventListener('click', event => {
     if (!customMenu.contains(event.target)) {
       hideCustomMenu();
     }
   });
 
-  customMenu.querySelectorAll('li').forEach(function (menuItem) {
+  customMenu.querySelectorAll('li').forEach(menuItem => {
     menuItem.addEventListener('click', function () {
-      let text = this.textContent.trim();
-      switch (text) {
-        case 'Rename':
-          console.log("Going to rename: ", this.dataset.path);
+      const action = this.id;
+      const path = this.getAttribute('data-path');
+      const dummyEvent = {
+        preventDefault: () => {},
+        currentTarget: {
+          getAttribute: (attr) => {
+            if (attr === 'data-path') return path;
+            if (attr === 'is_public') return this.getAttribute('is_public');
+            return null;
+          },
+          querySelector: (selector) => this.querySelector(selector)
+        }
+      };
+      switch (action) {
+        case 'rename':
+          handleRenameClick(dummyEvent);
           break;
-        case 'Delete':
-          console.log("Going to delete:", this.dataset.path);
+        case 'delete':
+          handleDeleteClick(dummyEvent);
           break;
-        case 'Publish':
-          console.log("Going to publish: ", this.dataset.path);
+        case 'pub':
+          handleBookmarkClick(dummyEvent);
           break;
-        case 'Unzip File':
-          console.log("Going to unzip file: ", this.dataset.path);
-          unzipFile();
+        case 'unzip':
+          unzipFile(dummyEvent);
           break;
         default:
           break;
@@ -356,6 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ['dragleave', 'drop'].forEach(eventName => {
     dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
   });
+
   dropZone.addEventListener('drop', handleDrop, false);
 
   function handleDrop(e) {
@@ -379,17 +388,17 @@ document.addEventListener('DOMContentLoaded', () => {
       method: 'POST',
       body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert('File uploaded successfully');
-        fetchFiles(currentPathDisplay.textContent);
-      } else {
-        alert('File upload failed');
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('File uploaded successfully');
+          fetchFiles(currentPathDisplay.textContent);
+        } else {
+          alert('File upload failed');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
   }
 });

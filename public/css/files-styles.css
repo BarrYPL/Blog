@@ -90,3 +90,24 @@ td a:hover::after{
   border-color: #333;
   color: #333;
 }
+
+#custom-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+#custom-menu ul {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+}
+#custom-menu ul li {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+#custom-menu ul li:hover {
+    background-color: #f0f0f0;
+}

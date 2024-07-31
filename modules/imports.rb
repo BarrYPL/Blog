@@ -10,6 +10,7 @@ require 'bcrypt'
 require 'erb'
 require 'cgi'
 require 'fileutils'
+require 'zip'
 require_relative './post_from_files.rb'
 
 class NilClass

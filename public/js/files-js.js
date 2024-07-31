@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentPathDisplay = document.getElementById('current-path');
   const optionsDiv = document.getElementById('options-div');
   const dropZone = document.getElementById('drop-zone');
+  const targetElement = document.getElementById('target-element');
+  const customMenu = document.getElementById('custom-menu');
   let multiDeleteButton;
 
   async function fetchFiles(path = '') {
@@ -17,6 +19,32 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       console.error('Error:', error);
     }
+  }
+
+  function showCustomMenu(event) {
+    event.preventDefault();
+
+    const eventDataPath = event.target.getAttribute('data-path');
+    const menuItems = ['unzip', 'rename', 'delete', 'pub'];
+
+    menuItems.forEach(item => _(item).setAttribute('data-path', eventDataPath));
+
+    const clickX = event.pageX;
+    const clickY = event.pageY;
+    const isPublic = event.currentTarget.getAttribute('is_public');
+
+    _('pub').innerHTML = isPublic
+      ? `<i class="fa-regular fa-bookmark"></i> Publish`
+      : `<i class="fa-solid fa-bookmark"></i> Unpublish`;
+
+    customMenu.style.left = `${clickX}px`;
+    customMenu.style.top = `${clickY}px`;
+    customMenu.style.display = 'block';
+  }
+
+
+  function hideCustomMenu() {
+    customMenu.style.display = 'none';
   }
 
   async function handleFileOperation(url, body) {
@@ -44,6 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     return element;
+  }
+
+  async function unzipFile() {
+    const path = event.currentTarget.getAttribute('data-path');
+    let currentPath = _('current-path').innerHTML.replace('/files','');
+    if (currentPath.length === 0) { currentPath = '/'; }
+    const data = await handleFileOperation('/manage-files', { path, currentPath: currentPath, action: 'unzip'});
+    if (data.error) {
+      alert(data.error)
+    } else {
+      fetchFiles(_('current-path').innerHTML);
+    }
   }
 
   async function deleteCurrentDir(path) {
@@ -102,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
     const target = event.currentTarget.tagName === 'I' ? event.currentTarget.parentElement : event.currentTarget;
     const oldPath = target.getAttribute('data-path');
-    const newName = prompt('Enter the new name for the file:');
+    const newName = prompt('Enter the new name for the file:', oldPath.split('/').pop());
     if (newName) {
       const pathParts = oldPath.split('/');
       pathParts.pop();
@@ -208,9 +248,10 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         const fullPath = `${data.path}/${file.name}`.replace('/files', '');
         const bookmarkClass = file.is_public ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark';
+        const icon = fullPath.slice(-3) === 'zip' ? 'fa-solid fa-file-zipper' : 'fa-solid fa-file';
         row.innerHTML = `
-          <td><a href="/getfile${fullPath}" class="file-link">${file.name}</a></td>
-          <td><i class="fa-solid fa-file"></i></td>
+          <td><a href="/getfile${fullPath}" class="file-link" data-path="${fullPath}" is_public="${file.is_public}">${file.name}</a></td>
+          <td><i class="${icon}"></i></td>
           <td>
             <a href="#" data-path="${fullPath}" class="rename-link"><i class="fa-solid fa-file-signature"></i></a>
             <a href="#" data-path="${fullPath}"><i class="fa-solid fa-trash"></i></a>
@@ -251,6 +292,10 @@ document.addEventListener('DOMContentLoaded', () => {
     fileTableBody.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
       checkbox.addEventListener('click', handleCheckboxClick);
     });
+
+    fileTableBody.querySelectorAll('.file-link').forEach(link => {
+        link.addEventListener('contextmenu', showCustomMenu);
+    });
   }
 
   document.querySelector('.file-browser-container').addEventListener('click', e => {
@@ -261,6 +306,36 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       fetchFiles(e.target.dataset.path);
     }
+  });
+
+  document.addEventListener('click', function (event) {
+    if (!customMenu.contains(event.target)) {
+      hideCustomMenu();
+    }
+  });
+
+  customMenu.querySelectorAll('li').forEach(function (menuItem) {
+    menuItem.addEventListener('click', function () {
+      let text = this.textContent.trim();
+      switch (text) {
+        case 'Rename':
+          console.log("Going to rename: ", this.dataset.path);
+          break;
+        case 'Delete':
+          console.log("Going to delete:", this.dataset.path);
+          break;
+        case 'Publish':
+          console.log("Going to publish: ", this.dataset.path);
+          break;
+        case 'Unzip File':
+          console.log("Going to unzip file: ", this.dataset.path);
+          unzipFile();
+          break;
+        default:
+          break;
+      }
+      hideCustomMenu();
+    });
   });
 
   fetchFiles();

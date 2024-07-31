@@ -371,10 +371,10 @@ class MyServer < Sinatra::Base
       end
 
     when "rename"
-      dir_path = data["path"]
+      file_path = data["path"]
       new_path = data["newPath"]
 
-      full_file_path = File.join(settings.public_folder, 'writeups', dir_path)
+      full_file_path = File.join(settings.public_folder, 'writeups', file_path)
       new_file_path = File.join(settings.public_folder, 'writeups', new_path)
 
       if File.exist?(full_path) && has_permission?(full_path)
@@ -387,6 +387,19 @@ class MyServer < Sinatra::Base
         { error: "File not found or permission denied" }.to_json
       end
 
+      when "unzip"
+        file_path = data["path"]
+        location = data["currentPath"]
+
+        full_file_path = File.join(settings.public_folder, 'writeups', file_path)
+        full_location_path = File.join(settings.public_folder, 'writeups', location)
+
+        if File.exist?(full_file_path) && has_permission?(full_file_path)
+          file_count = unzip_file(full_file_path, full_location_path)
+          { success: true, message: "#{file_count} file(s) unzipped successfully" }.to_json
+        else
+          { error: "File not found or permission denied" }.to_json
+        end
     else
       { error: "Invalid action: #{action}" }.to_json
     end
@@ -568,6 +581,22 @@ class MyServer < Sinatra::Base
   def prepare_post(markdown_content)
     html_content = settings.markdown.render(markdown_content)
     return html_content
+  end
+
+  def unzip_file(zip_file_path, destination_folder)
+    extracted_files_count = 0
+
+    Zip::File.open(zip_file_path) do |zip_file|
+      zip_file.each do |entry|
+        file_path = File.join(destination_folder, entry.name)
+        FileUtils.mkdir_p(File.dirname(file_path))
+        unless File.exist?(file_path)
+          zip_file.extract(entry, file_path)
+          extracted_files_count += 1
+        end
+      end
+    end
+    extracted_files_count
   end
 
   helpers do

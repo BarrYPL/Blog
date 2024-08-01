@@ -1,0 +1,28 @@
+.about-content {
+  display: flex;
+}
+
+.about-text {
+  margin-left: 15px;
+  padding-left: 15px;
+  border-left: 1px solid #ccc;
+}
+
+.personal-title {
+  color: #999;
+  font-weight: bold;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.author > *:not(:first-child) {
+    margin-top: 10px;
+}
+
+.author img {
+  border-radius: 50%;
+}

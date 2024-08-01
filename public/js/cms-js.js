@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-  function block_deleting(e){
+  function block_deleting(e) {
     e.preventDefault();
-    if(window.confirm("Na pewno chcesz usunąć element?")){
+    if (window.confirm("Na pewno chcesz usunąć element?")) {
       window.location = e.currentTarget.href;
     }
   }
-  
+
   const forms = document.querySelectorAll('.publish-form');
 
   forms.forEach(function(form) {
@@ -28,24 +28,26 @@ document.addEventListener('DOMContentLoaded', function() {
           if (buttonValue === '1') {
             button.value = '0';
             button.textContent = 'Hide';
-            _(`is_public_${postId}`).textContent = '1';
+            button.className = 'hide-gray';
+            customAlert(`Post ${postId} has been published`);
           } else {
             button.value = '1';
             button.textContent = 'Publish';
-            _(`is_public_${postId}`).textContent = '0';
+            button.className = '';
+            customAlert(`Post ${postId} has been hidden`);
           }
         } else {
-          alert('Wystąpił błąd!');
+          customAlert('Wystąpił błąd!', 'error');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Wystąpił błąd podczas przesyłania żądania.');
+        customAlert('Wystąpił błąd podczas przesyłania żądania.', 'error');
       });
     });
   });
 
-  document.querySelectorAll('#del-button').forEach(item => {
+  document.querySelectorAll('.delete-button').forEach(item => {
     item.addEventListener('click', block_deleting);
-  })
+  });
 });

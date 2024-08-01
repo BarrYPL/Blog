@@ -23,6 +23,30 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
+function customAlert(message, alertClass = 'alert') {
+  const alertContainer = document.getElementById('alert-container');
+  const alertDiv = document.createElement('div');
+
+  alertDiv.className = alertClass === 'alert' ? 'custom-alert' : 'custom-error';
+  alertDiv.textContent = message;
+
+  const closeButton = document.createElement('button');
+  closeButton.className = 'close-btn';
+  closeButton.innerHTML = '&times;';
+  closeButton.onclick = () => {
+    alertDiv.style.opacity = '0';
+    setTimeout(() => alertDiv.remove(), 500);
+  };
+
+  alertDiv.appendChild(closeButton);
+  alertContainer.appendChild(alertDiv);
+
+   setTimeout(() => {
+     alertDiv.style.opacity = '0';
+     setTimeout(() => alertDiv.remove(), 500);
+   }, 2000);
+}
+
 function toggleMenu() {
     var menuRight = document.querySelector('.menu-right');
     isExpanded = menuRight.classList.toggle('menu-right-expanded');

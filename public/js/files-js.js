@@ -7,30 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let multiDeleteButton;
   let currentPath = '';
 
-  function customAlert(message, alertClass = 'alert') {
-    const alertContainer = document.getElementById('alert-container');
-    const alertDiv = document.createElement('div');
-
-    alertDiv.className = alertClass === 'alert' ? 'custom-alert' : 'custom-error';
-    alertDiv.textContent = message;
-
-    const closeButton = document.createElement('button');
-    closeButton.className = 'close-btn';
-    closeButton.innerHTML = '&times;';
-    closeButton.onclick = () => {
-      alertDiv.style.opacity = '0';
-      setTimeout(() => alertDiv.remove(), 500);
-    };
-
-    alertDiv.appendChild(closeButton);
-    alertContainer.appendChild(alertDiv);
-
-     setTimeout(() => {
-       alertDiv.style.opacity = '0';
-       setTimeout(() => alertDiv.remove(), 500);
-     }, 2000);
-  }
-
   async function fetchFiles(path_to_fetch = '') {
     try {
       const response = await fetch(path_to_fetch, { method: 'POST' });

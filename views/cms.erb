@@ -1,4 +1,4 @@
-<h1>>/Posts CMS $</h1>
+<h1>/Posts CMS</h1>
 <hr>
 <table>
   <tr>
@@ -19,15 +19,19 @@
       <td><%= post[:tags] %></td>
       <td><%= post[:category] %></td>
       <td><%= post[:author] %></td>
-      <form class="publish-form" method="post">
-        <input type="hidden" name="post_id" value="<%= post[:id] %>">
-        <% if post[:is_public] == 1 %>
-          <td><button type="submit" value="0" class="hide-gray" name="button">Hide</button></td>
-        <% else %>
-          <td><button type="submit" value="1" name="button">Publish</button></td>
-        <% end %>
-      </form>
-      <td><a href="/delete/<%= post[:id] %>" id="del-button" class="main-button">Delete</a></td>
+      <td>
+        <form class="publish-form" method="post">
+          <input type="hidden" name="post_id" value="<%= post[:id] %>">
+          <% if post[:is_public] == 1 %>
+            <button type="submit" value="0" class="hide-gray" name="button">Hide</button>
+          <% else %>
+            <button type="submit" value="1" name="button">Publish</button>
+          <% end %>
+        </form>
+      </td>
+      <td>
+        <a href="/delete/<%= post[:id] %>" id="del-button-<%= post[:id] %>" class="main-button delete-button">Delete</a>
+      </td>
     </tr>
   <% end %>
 </table>

@@ -179,7 +179,7 @@ li a:hover::after{
 }
 
 .container {
-  width: 860px;
+  width: 880px;
   margin: 50px auto 0;
   flex: 1;
   display: flex;
@@ -257,4 +257,41 @@ footer {
     background: #fafafa;
     width: 300px;
     height: 100vh;
+}
+
+.alert-container {
+  position: fixed;
+  top: 80px;
+  right: 10px;
+  z-index: 1000;
+}
+
+.custom-alert,
+.custom-error {
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  position: relative;
+  transition: opacity 0.5s ease;
+}
+.custom-alert .close-btn,
+.custom-error .close-btn {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.custom-alert {
+  background-color: #ddd;
+  border: 1px solid #121212;
+}
+
+.custom-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #b16c6c;
 }

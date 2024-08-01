@@ -39,6 +39,7 @@ class MyServer < Sinatra::Base
   end
 
   get '/about' do
+    @css = ["about-styles"]
     erb :about
   end
 

@@ -34,7 +34,7 @@ class PostFromFiles
       @author = result[:author]
       @category = result[:category]
       @is_public = result[:is_public]
-      @content = File.open("public/writeups/#{@path}/Solve/WRITEUP.md").read
+      @content = update_images(File.open("public/writeups/#{@path}/Solve/WRITEUP.md").read, "/writeups/#{@path}/Solve/")
       @ctf_name = result[:ctf_name]
       @publish_content = update_links(File.open("public/writeups/#{@path}/README.md").read)
     else
@@ -55,5 +55,10 @@ class PostFromFiles
     old_link = text.match(/(?<=\/)[^)]*\/[^)]*(?=\))/) #Match [./file/name] as file/name
     updated_link =  "getfile/#{@path.gsub('\\','/')}#{old_link}"#.gsub(" ",'%20') #Makes link to getfile endpoint
     text.gsub(/(?<=\()[^)]*(?=\))/, updated_link)
+  end
+
+  def update_images(text, path)
+    updated_text = text.gsub('./', path)
+    updated_text
   end
 end

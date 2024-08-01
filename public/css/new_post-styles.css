@@ -1,11 +1,9 @@
 form {
   width: 100%;
-  margin-top: 20px;
 }
 
 input[type = "text"] {
   font-family: "Anonymous Pro", monospace;
-  margin-bottom: 20px;
   width: 100%;
   padding: 8px;
   border: 1px solid #ddd;
@@ -14,6 +12,7 @@ input[type = "text"] {
 }
 
 button[type = "submit"] {
+ margin-top: 20px;
  background: #121212;
  border: 0;
  padding: 14px 40px;
@@ -38,7 +37,6 @@ button[type = "submit"] {
 
 .select-selected {
   background-color: transparent;
-  margin-bottom: 20px;
   border-radius: 8px;
 }
 
@@ -82,4 +80,8 @@ button[type = "submit"] {
 
 .select-items div:hover, .same-as-selected {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+form p{
+  padding: 10px 0px;
 }

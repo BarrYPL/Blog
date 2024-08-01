@@ -1,0 +1,31 @@
+form {
+  width: 100%;
+}
+
+input[type = "text"] {
+  font-family: "Anonymous Pro", monospace;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+button[type = "submit"] {
+ margin-top: 20px;
+ background: #121212;
+ border: 0;
+ padding: 14px 40px;
+ outline: none;
+ color: #fafafa;
+ cursor: pointer;
+ border-radius: 5px;
+}
+
+form p{
+  padding: 10px 0px;
+}
+
+.writeup-form-container {
+  width: 100%;
+}

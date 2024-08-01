@@ -2,9 +2,11 @@
 <hr>
 <% if @post[:is_public] == 0 %><h2 class="info">UNPUBLISHED!</h2><% end %>
 <form id="post-form" <% if @post %> action="/edit-post" <% else %> action="/new-post" <% end %> method="post">
+  <p>Post title:</p>
   <input type="hidden" name="id" value="<%= @post[:id] %>">
   <input type="text" name="title" <% if @post %>value="<%= @post[:title] %>"<% else %>placeholder="Name your post"<% end %>>
 
+  <p>Select category:</p>
   <% if @categories.count > 1 %>
   <div class="custom-select" name="category">
     <select name="category">
@@ -18,7 +20,9 @@
     <input type="text" id="catg" <% unless @categories.first.empty? %><%= @categories %> value="<%= @categories.first %>" <% end %>>
   <% end %>
 
+  <p>Post content:</p>
   <textarea name="content" id="editor" placeholder="Type Here..."><% if @post %><%= @post[:content] %><% end %></textarea>
+  <p>Add tags:</p>
   <input type="text" name="tags" <% if @tags %> value="<%= @tags %>" <% else %>placeholder="Some, tags, comma, separated..."<% end %>>
   <input type="hidden" name="is_public" <% if @post[:is_public] == 1 %> value="1" <% else %>value="0"<% end %>>
   <button type="submit">Save</button>

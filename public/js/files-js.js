@@ -7,12 +7,36 @@ document.addEventListener('DOMContentLoaded', () => {
   let multiDeleteButton;
   let currentPath = '';
 
-  async function fetchFiles(path = '') {
+  function customAlert(message, alertClass = 'alert') {
+    const alertContainer = document.getElementById('alert-container');
+    const alertDiv = document.createElement('div');
+
+    alertDiv.className = alertClass === 'alert' ? 'custom-alert' : 'custom-error';
+    alertDiv.textContent = message;
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-btn';
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = () => {
+      alertDiv.style.opacity = '0';
+      setTimeout(() => alertDiv.remove(), 500);
+    };
+
+    alertDiv.appendChild(closeButton);
+    alertContainer.appendChild(alertDiv);
+
+     setTimeout(() => {
+       alertDiv.style.opacity = '0';
+       setTimeout(() => alertDiv.remove(), 500);
+     }, 2000);
+  }
+
+  async function fetchFiles(path_to_fetch = '') {
     try {
-      const response = await fetch(path, { method: 'POST' });
+      const response = await fetch(path_to_fetch, { method: 'POST' });
       const data = await response.json();
       if (data.error) {
-        alert(data.error);
+        customAlert(data.error, 'error');
       } else {
         renderFiles(data);
       }
@@ -76,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       return await response.json();
     } catch (error) {
+      customAlert('Error' + error, 'error');
       console.error('Error:', error);
     }
   }
@@ -100,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!currentPath.length) { currentPath = '/'; }
     const data = await handleFileOperation('/manage-files', { path, currentPath, action: 'unzip' });
     if (data.error) {
-      alert(data.error);
+      customAlert('Error: ' + data.error, 'erorr');
     } else {
       fetchFiles(currentPathDisplay.textContent);
     }
@@ -110,9 +135,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirm('Are you sure you want to delete this directory?')) {
       const data = await handleFileOperation(`/rmdir${path}`, {});
       if (data.error) {
-        alert(data.error);
+        customAlert('Error: ' + data.error, 'error');
       } else {
-        fetchFiles();
+        let pathSegments = currentPathDisplay.textContent.replace('/files','').split('/');
+        pathSegments.pop();
+        let parentDirectory = pathSegments.join('/');
+        customAlert(data.message);
+        fetchFiles(parentDirectory);
       }
     }
   }
@@ -122,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dirName) {
       const data = await handleFileOperation('/mkdir', { path: currentPath, name: dirName });
       if (data.error) {
-        alert(data.error);
+        customAlert('Error: ' + data.error, 'error');
       } else {
         fetchFiles(currentPath);
       }
@@ -141,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.success) {
         fetchFiles(currentPathDisplay.textContent);
       } else {
-        alert('Failed to publish/unpublish file');
+        customAlert('Failed to publish/unpublish file', 'error');
       }
     } else {
       const path = event.currentTarget.getAttribute('data-path');
@@ -155,10 +184,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirm('Are you sure you want to delete this file?')) {
       const data = await handleFileOperation('/manage-files', { path, action: 'delete' });
       if (data.success) {
-        alert('File successfully deleted');
+        customAlert('File successfully deleted');
         fetchFiles(currentPathDisplay.textContent);
       } else {
-        alert('Failed to delete file: ' + data.error);
+        customAlert('Failed to delete file: ' + data.error, 'error');
       }
     }
   }
@@ -174,10 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const newPath = pathParts.join('/') + '/' + newName;
       const data = await handleFileOperation('/manage-files', { path: oldPath, newPath, action: 'rename' });
       if (data.success) {
-        alert('File successfully renamed');
+        customAlert('File successfully renamed');
         fetchFiles(currentPathDisplay.textContent);
       } else {
-        alert('Failed to rename file: ' + data.error);
+        customAlert('Failed to rename file: ' + data.error, 'error');
       }
     }
   }
@@ -205,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
     const checkboxes = document.querySelectorAll('#file-table tbody input[type="checkbox"]:checked');
     const paths = Array.from(checkboxes).map(checkbox => checkbox.value);
+    const reloadPath = currentPathDisplay.textContent;
 
     if (paths.length > 0 && confirm('Are you sure you want to delete these files?')) {
       let successCount = 0;
@@ -217,12 +247,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (successCount === paths.length) {
-        alert('All files successfully deleted');
+        customAlert('All files successfully deleted');
       } else {
-        alert(`${successCount} out of ${paths.length} files successfully deleted`);
+        customAlert(`${successCount} out of ${paths.length} files successfully deleted`, 'error');
       }
-
-      fetchFiles(currentPathDisplay.textContent); // Ensure we are passing the correct path
+      fetchFiles(reloadPath);
     }
   }
 
@@ -428,14 +457,14 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          alert('File uploaded successfully');
+          customAlert('File uploaded successfully');
           fetchFiles(currentPathDisplay.textContent);
         } else {
-          alert('File upload failed: ' + data.message);
+          customAlert('File upload failed: ' + data.message, 'error');
         }
       })
       .catch(error => {
-        console.error('Error:', error);
+        customAlert('Erorr:' + error, 'error');
       });
     }
 });

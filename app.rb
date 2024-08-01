@@ -317,14 +317,19 @@ class MyServer < Sinatra::Base
       file = params[:file][:tempfile]
       file_path = File.join(settings.public_folder, 'writeups', path, file_name)
 
-      File.open(file_path, 'wb') do |f|
-        f.write(file.read)
+      if File.exist?(file_path)
+        { success: false, message: 'File already exists', filename: file_name }.to_json
+      else
+        File.open(file_path, 'wb') do |f|
+          f.write(file.read)
+        end
+        { success: true, message: 'File uploaded successfully', filename: file_name }.to_json
       end
-      { success: true, message: 'File uploaded successfully', filename: file_name }.to_json
     else
       { success: false, message: 'No file uploaded' }.to_json
     end
   end
+
 
   post '/manage-files' do
     content_type :json

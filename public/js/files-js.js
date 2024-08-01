@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
 
     const eventDataPath = event.target.getAttribute('data-path');
+    const isZipped = eventDataPath.slice(-3) === 'zip';
     const menuItems = ['unzip', 'rename', 'delete', 'pub'];
 
     menuItems.forEach(item => document.getElementById(item).setAttribute('data-path', eventDataPath));
@@ -36,6 +37,26 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pub').innerHTML = isPublic
       ? `<i class="fa-solid fa-bookmark"></i> Hide`
       : `<i class="fa-regular fa-bookmark"></i> Publish`;
+
+    document.getElementById('unzip').style.display = isZipped ? 'block' : 'none';
+
+    customMenu.style.left = `${clickX}px`;
+    customMenu.style.top = `${clickY}px`;
+    customMenu.style.display = 'block';
+  }
+
+  function showCustomMenuDirectories(event) {
+    event.preventDefault();
+    const eventDataPath = event.target.getAttribute('data-path');
+    const menuItems = ['unzip', 'rename', 'delete', 'pub'];
+
+    menuItems.forEach(item => document.getElementById(item).setAttribute('data-path', eventDataPath));
+    document.getElementById('delete').style.display = 'none';
+    document.getElementById('unzip').style.display = 'none';
+    document.getElementById('pub').innerHTML = `<i class="fa-solid fa-folder-open"></i> Open`;
+
+    const clickX = event.pageX;
+    const clickY = event.pageY;
 
     customMenu.style.left = `${clickX}px`;
     customMenu.style.top = `${clickY}px`;
@@ -110,15 +131,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function handleBookmarkClick(event) {
     event.preventDefault();
-    const path = event.currentTarget.getAttribute('data-path');
-    const icon = event.currentTarget.querySelector('i');
-    const action = icon.classList.contains('fa-regular') ? 'publish' : 'hide';
-    const data = await handleFileOperation('/manage-files', { path, action });
+    const isPublic = event.currentTarget.getAttribute('is_public');
+    if (isPublic !== 'Open') {
+      const path = event.currentTarget.getAttribute('data-path');
+      const icon = event.currentTarget.querySelector('i');
+      const action = icon.classList.contains('fa-regular') ? 'publish' : 'hide';
+      const data = await handleFileOperation('/manage-files', { path, action });
 
-    if (data.success) {
-      fetchFiles(currentPathDisplay.textContent);
+      if (data.success) {
+        fetchFiles(currentPathDisplay.textContent);
+      } else {
+        alert('Failed to publish/unpublish file');
+      }
     } else {
-      alert('Failed to publish/unpublish file');
+      const path = event.currentTarget.getAttribute('data-path');
+      fetchFiles(path);
     }
   }
 
@@ -139,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function handleRenameClick(event) {
     event.preventDefault();
     const target = event.currentTarget.tagName === 'I' ? event.currentTarget.parentElement : event.currentTarget;
-    const oldPath = target.getAttribute('data-path');
+    const oldPath = target.getAttribute('data-path').replace('/files','');
     const newName = prompt('Enter the new name for the file:', oldPath.split('/').pop());
     if (newName) {
       const pathParts = oldPath.split('/');
@@ -238,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const row = createElement('tr', { className: file.is_directory ? 'folder' : 'file' });
       if (file.is_directory) {
         row.innerHTML = `
-          <td><a href="#" data-path="${data.path}/${file.name}">${file.name}</a></td>
+          <td><a href="#" class="directory-link" data-path="${data.path}/${file.name}" is_public="directory">${file.name}</a></td>
           <td><i class="fa-solid fa-folder"></i></td>
           <td><a href="#" data-path="${data.path.replace('/files', '')}/${file.name}" class="rename-link"><i class="fa-solid fa-file-signature"></i></a></td>
         `;
@@ -293,6 +320,10 @@ document.addEventListener('DOMContentLoaded', () => {
     fileTableBody.querySelectorAll('.file-link').forEach(link => {
       link.addEventListener('contextmenu', showCustomMenu);
     });
+
+    fileTableBody.querySelectorAll('.directory-link').forEach(link => {
+      link.addEventListener('contextmenu', showCustomMenuDirectories);
+    });
   }
 
   document.querySelector('.file-browser-container').addEventListener('click', e => {
@@ -315,17 +346,22 @@ document.addEventListener('DOMContentLoaded', () => {
     menuItem.addEventListener('click', function () {
       const action = this.id;
       const path = this.getAttribute('data-path');
+
+      const textNodes = Array.from(this.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+      const is_public = textNodes.map(node => node.textContent.trim()).join('');
+
       const dummyEvent = {
         preventDefault: () => {},
         currentTarget: {
           getAttribute: (attr) => {
             if (attr === 'data-path') return path;
-            if (attr === 'is_public') return this.getAttribute('is_public');
+            if (attr === 'is_public') return is_public;
             return null;
           },
           querySelector: (selector) => this.querySelector(selector)
         }
       };
+
       switch (action) {
         case 'rename':
           handleRenameClick(dummyEvent);
@@ -345,6 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
       hideCustomMenu();
     });
   });
+
 
   fetchFiles();
 
@@ -394,11 +431,11 @@ document.addEventListener('DOMContentLoaded', () => {
           alert('File uploaded successfully');
           fetchFiles(currentPathDisplay.textContent);
         } else {
-          alert('File upload failed');
+          alert('File upload failed: ' + data.message);
         }
       })
       .catch(error => {
         console.error('Error:', error);
       });
-  }
+    }
 });

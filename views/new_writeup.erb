@@ -1,10 +1,71 @@
 <h1>>/New Writeup $</h1>
 <hr>
 <div class="writeup-form-container">
-  <form class="new-writeup-form" action="new-writeup" method="post">
+  <% unless params[:stage] %>
+  <form class="new-writeup-form" action="new-writeup/1" method="post">
     <p>CTF Name: </p>
     <input type="text" name="ctf_name" placeholder="Ctf name">
     <p>Task name:</p>
     <input type="text" name="title" placeholder="Title">
+    <button type="submit">Submit</button>
   </form>
+  <% else %>
+    <% if params[:stage].to_i == 1 %>
+      <form class="images-form" action="/new-writeup/2" method="post">
+        <button type="submit">Submit</button>
+      </form>
+    <% elsif params[:stage].to_i == 2 %>
+    <form id="post-form" <% if @post %> action="/new-writeup/3" <% else %> action="/new-post" <% end %> method="post">
+      <p>Post title:</p>
+      <input type="hidden" name="id" value="<%= @post[:id] %>">
+      <input type="text" name="title" <% if @post %>value="<%= @post[:title] %>"<% else %>placeholder="Name your post"<% end %>>
+
+      <p>Select category:</p>
+      <% if @categories.count > 1 %>
+      <div class="custom-select" name="category">
+        <select name="category">
+          <option>Select category...</option>
+          <% @categories.each do |cat| %>
+            <option value="<%= cat %>"><%= cat %></option>
+          <% end %>
+        </select>
+      </div>
+      <% else %>
+        <input type="text" id="catg" <% unless @categories.first.empty? %><%= @categories %> value="<%= @categories.first %>" <% end %>>
+      <% end %>
+
+      <p>Post content:</p>
+      <textarea name="content" id="editor" placeholder="Type Here..."><% if @post %><%= @post[:content] %><% end %></textarea>
+      <p>Add tags:</p>
+      <input type="text" name="tags" <% if @tags %> value="<%= @tags %>" <% else %>placeholder="Some, tags, comma, separated..."<% end %>>
+      <input type="hidden" name="is_public" <% if @post[:is_public] == 1 %> value="1" <% else %>value="0"<% end %>>
+      <button type="submit">Save</button>
+    </form>
+
+    <script>
+      var easyMDE = new EasyMDE({ element: document.getElementById('editor') });
+
+      async function spellCheck(text) {
+        const response = await fetch('/spellcheck', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ content: text })
+        });
+
+        const data = await response.json();
+        return data.errors;
+      }
+
+      easyMDE.codemirror.on('change', async () => {
+        const text = easyMDE.value();
+        const errors = await spellCheck(text);
+        errors.forEach(error => {
+          console.log(`Error: ${error.message} at position ${error.offset}`);
+        });
+      });
+    </script>
+    <% end %>
+  <% end %>
 </div>

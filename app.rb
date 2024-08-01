@@ -116,7 +116,7 @@ class MyServer < Sinatra::Base
       @post = $postsDB.where(id: params[:id]).all.first
       @categories << @post[:category]
       @tags = @post[:tags]
-      @css = ["new_post-styles"]
+      @css = ["new-post-styles"]
       return erb :new_post
     end
 
@@ -157,7 +157,7 @@ class MyServer < Sinatra::Base
       @error = " "
       @js = ["new-post-js"]
       @categories = $postsDB.select(:category).distinct.map(:category)
-      @css = ["new_post-styles"]
+      @css = ["new-post-styles"]
       return erb :new_post
     end
 
@@ -260,7 +260,7 @@ class MyServer < Sinatra::Base
       end
       return erb :cms, locals: { posts: $postsDB }
     end
-    
+
     redirect '/error'
   end
 
@@ -271,6 +271,13 @@ class MyServer < Sinatra::Base
     end
 
     redirect '/error'
+  end
+
+  post '/new-writeup/:stage' do
+    puts params.inspect
+    #Ostatecznie stages będą musiały mieć tutaj też osobne akcje.
+    @css = ["new-post-styles", "new-writeup-styles"]
+    erb :new_writeup, locals: { params: params }
   end
 
   get '/logout' do

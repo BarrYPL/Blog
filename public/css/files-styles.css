@@ -2,7 +2,8 @@ ul {
   list-style-type: none;
 }
 
-table, th, td {
+table, th, tr {
+  width: 100%;
   border-bottom: 1px solid #999;
   border-collapse: collapse;
 }
@@ -66,6 +67,10 @@ td a:hover::after{
 
 .li-buttons {
   margin-bottom: 10px;
+}
+
+.options {
+  display: flex;
 }
 
 #options-div {

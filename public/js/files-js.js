@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         row.innerHTML = `
           <td><a href="/getfile${fullPath}" class="file-link" data-path="${fullPath}" is_public="${file.is_public}">${file.name}</a></td>
           <td><i class="${icon}"></i></td>
-          <td>
+          <td class="options">
             <a href="#" data-path="${fullPath}" class="rename-link"><i class="fa-solid fa-file-signature"></i></a>
             <a href="#" data-path="${fullPath}"><i class="fa-solid fa-trash"></i></a>
             <a href="#" data-path="${fullPath}" class="bookmark-link"><i class="${bookmarkClass}"></i></a>

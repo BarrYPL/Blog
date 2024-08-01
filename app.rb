@@ -259,9 +259,18 @@ class MyServer < Sinatra::Base
         @error = "Invalid ID"
       end
       return erb :cms, locals: { posts: $postsDB }
-    else
-      redirect '/error'
     end
+    
+    redirect '/error'
+  end
+
+  get '/new-writeup' do
+    @css = ["new-writeup-styles"]
+    if current_user.is_admin?
+      return erb :new_writeup
+    end
+
+    redirect '/error'
   end
 
   get '/logout' do

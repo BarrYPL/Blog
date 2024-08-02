@@ -274,9 +274,36 @@ class MyServer < Sinatra::Base
   end
 
   post '/new-writeup/:stage' do
-    puts params.inspect
-    #Ostatecznie stages będą musiały mieć tutaj też osobne akcje.
     @css = ["new-post-styles", "new-writeup-styles"]
+    unless current_user.is_admin?
+      redirect '/error'
+    end
+    stage = params[:stage].to_i
+    case stage
+    when 1
+      if params[:ctf_name].nil? || params[:ctf_name].empty? || params[:title].nil? || params[:title].empty?
+        @error = "Invalid parameters!"
+        params[:stage] = nil
+        return erb :new_writeup
+      end
+      $creator = GitWriteupCreator.new(ctf_name: params[:ctf_name], title: params[:title])
+    when 2
+      content = params[:content]
+      $creator.add_task(content)
+      if params[:files]
+        params[:files].each do |file|
+          filename = file[:filename]
+          filepath = File.join($creator.get_publish_path, filename)
+          File.open(filepath, 'wb') do |f|
+            f.write(file[:tempfile].read)
+          end
+        end
+      end
+    when 3
+      #Upload writeup images
+    else
+      @error = "Invalid stage number!"
+    end
     erb :new_writeup, locals: { params: params }
   end
 

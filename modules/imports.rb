@@ -11,7 +11,9 @@ require 'erb'
 require 'cgi'
 require 'fileutils'
 require 'zip'
-require_relative './post_from_files.rb'
+require 'sinatra/reloader' if development?
+require_relative './PostFromFiles.rb'
+require_relative './GitWriteupCreator.rb'
 
 class NilClass
   def is_admin?

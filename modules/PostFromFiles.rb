@@ -34,7 +34,7 @@ class PostFromFiles
       @author = result[:author]
       @category = result[:category]
       @is_public = result[:is_public]
-      @content = update_images(File.open("public/writeups/#{@path}/Solve/WRITEUP.md").read, "/writeups/#{@path}/Solve/")
+      @content = update_images(File.open("public/writeups/#{@path}/solve/WRITEUP.md").read, "/writeups/#{@path}/solve/")
       @ctf_name = result[:ctf_name]
       @publish_content = update_links(File.open("public/writeups/#{@path}/README.md").read)
     else

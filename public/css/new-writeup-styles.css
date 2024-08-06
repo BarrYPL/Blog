@@ -29,3 +29,50 @@ form p{
 .writeup-form-container {
   width: 100%;
 }
+
+.images-holder {
+  display: flex;
+  flex-direction: column;
+  width: 100px;
+  flex-wrap: wrap;
+}
+
+.images-holder a {
+  margin-bottom: 5px;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border:none;
+  position: relative;
+  padding-right: 5px;
+}
+
+.images-holder a:hover{
+  border: none;
+}
+
+.images-holder a::after{
+  content: '';
+  position: absolute;
+  width: 0px;
+  height: 1px;
+  left: 50%;
+  bottom:0;
+  background-color: #121212;
+  transition: all ease-in-out .2s;
+}
+
+.images-holder a:hover::after{
+  width: 100%;
+  left: 0;
+}
+
+.create-post-area {
+  display: flex;
+}
+
+.EasyMDEContainer{
+  width: 100%;
+}

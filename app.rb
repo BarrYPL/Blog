@@ -265,7 +265,9 @@ class MyServer < Sinatra::Base
   end
 
   get '/new-writeup' do
+    @error=""
     @css = ["new-writeup-styles"]
+    @js = ["new-writeup-js"]
     if current_user.is_admin?
       return erb :new_writeup
     end
@@ -288,19 +290,26 @@ class MyServer < Sinatra::Base
       end
       $creator = GitWriteupCreator.new(ctf_name: params[:ctf_name], title: params[:title])
     when 2
-      content = params[:content]
-      $creator.add_task(content)
-      if params[:files]
-        params[:files].each do |file|
-          filename = file[:filename]
-          filepath = File.join($creator.get_publish_path, filename)
-          File.open(filepath, 'wb') do |f|
-            f.write(file[:tempfile].read)
-          end
-        end
-      end
+      #add task description and task files
+      $creator.add_task(params[:content])
+      save_files(files: params[:files], base_path: $creator.get_publish_path)
     when 3
-      #Upload writeup images
+      #upload images
+      @js = ["new-writeup-images-js"]
+      save_files(files: params[:files], base_path: $creator.get_solve_path, sub_directory: 'images')
+    when 4
+      #add everything to db and save in readme.md
+      $creator.add_writeup(params[:content])
+      $postsDB.insert(title: $creator.ctf_title,
+        date: Time.now,
+        tags: params[:tags].strip.squeeze,
+        author: current_user[:username],
+        category: params[:category],
+        content: params[:content],
+        is_public: 0,
+        ctf_name: $creator.ctf_name,
+        files_path: $creator.get_path_for_db)
+      redirect '/posts-cms'
     else
       @error = "Invalid stage number!"
     end
@@ -553,6 +562,18 @@ class MyServer < Sinatra::Base
     { errors: errors }.to_json
   end
 
+  def save_files(files:, base_path:, sub_directory: nil)
+    return unless files
+
+    files.each do |file|
+      filename = file[:filename]
+      filepath = sub_directory ? File.join(base_path, sub_directory, filename) : File.join(base_path, filename)
+      File.open(filepath, 'wb') do |f|
+        f.write(file[:tempfile].read)
+      end
+    end
+  end
+
   def has_permission?(file_path)
     if current_user.is_admin?
       return true
@@ -565,7 +586,7 @@ class MyServer < Sinatra::Base
    session.clear
    @error = 'Username or password was incorrect.'
    @css = ["login-styles"]
-   erb :login
+   return erb :login
   end
 
   def get_file(file_path)

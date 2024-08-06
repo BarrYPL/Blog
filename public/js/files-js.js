@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuItems = ['unzip', 'rename', 'delete', 'pub'];
 
     menuItems.forEach(item => document.getElementById(item).setAttribute('data-path', eventDataPath));
-    document.getElementById('delete').style.display = 'none';
+    //document.getElementById('delete').style.display = 'none';
     document.getElementById('unzip').style.display = 'none';
     document.getElementById('pub').innerHTML = `<i class="fa-solid fa-folder-open"></i> Open`;
 

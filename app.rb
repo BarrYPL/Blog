@@ -391,7 +391,7 @@ class MyServer < Sinatra::Base
 
     data = JSON.parse(request.body.read)
     action = data['action']
-    file_path = data['path']
+    file_path = data['path'].gsub('/files', '')
     full_path = File.join(settings.public_folder, 'writeups', file_path)
     file = find_file_in_db(full_path)
 
@@ -399,7 +399,7 @@ class MyServer < Sinatra::Base
       $filesDB.where(path: path).update(updates)
     end
 
-    def json_response(success:, message:, error: nil)
+    def json_response(success:, message: nil, error: nil)
       { success: success, message: message, error: error }.compact.to_json
     end
 
@@ -426,8 +426,15 @@ class MyServer < Sinatra::Base
 
     when "delete"
       if file_operation_exists_and_permitted?(full_path)
-        File.delete(full_path)
-        $filesDB.where(path: full_path).delete if file
+        check_for_file = File.directory?(full_path)
+        unless check_for_file
+          File.delete(full_path)
+          if file
+            $filesDB.where(path: full_path).delete
+          end
+        else
+          delete_directory(full_path.gsub('public/writeups',''))
+        end
         json_response(success: true, message: "File successfully deleted")
       else
         json_response(success: false, error: "File not found or permission denied")
@@ -468,13 +475,7 @@ class MyServer < Sinatra::Base
     end
 
     dir_path = params[:splat].first
-    full_dir_path = File.join(settings.public_folder, 'writeups', dir_path)
-    if File.exist?(full_dir_path) && File.directory?(full_dir_path)
-      FileUtils.rm_rf(full_dir_path)
-      { success: true, message: "File successfully deleted" }.to_json
-    else
-      { success: false, error: "Dir not found or permission denied" }.to_json
-    end
+    delete_directory(dir_path)
   end
 
   post '/mkdir' do
@@ -571,6 +572,17 @@ class MyServer < Sinatra::Base
       File.open(filepath, 'wb') do |f|
         f.write(file[:tempfile].read)
       end
+    end
+  end
+
+  def delete_directory(dir_path)
+    puts dir_path
+    full_dir_path = File.join(settings.public_folder, 'writeups', dir_path)
+    if File.exist?(full_dir_path) && File.directory?(full_dir_path)
+      FileUtils.rm_rf(full_dir_path)
+      { success: true, message: "File successfully deleted" }.to_json
+    else
+      { success: false, error: "Dir not found or permission denied" }.to_json
     end
   end
 

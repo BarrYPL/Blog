@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFiles(data);
       }
     } catch (error) {
+      console.error('Error for: ', path_to_fetch);
       console.error('Error:', error);
     }
   }
@@ -113,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.error) {
         customAlert('Error: ' + data.error, 'error');
       } else {
-        let pathSegments = currentPathDisplay.textContent.replace('/files','').split('/');
+        let pathSegments = currentPathDisplay.textContent.split('/');
         pathSegments.pop();
         let parentDirectory = pathSegments.join('/');
         customAlert(data.message);
@@ -333,6 +334,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelector('.file-browser-container').addEventListener('click', e => {
     if (e.target.tagName === 'A' && e.target.classList.contains('file-link')) {
+      return;
+    }
+    if (e.target.tagName === 'A' && e.target.classList.contains('main-button')) {
       return;
     }
     if (e.target.tagName === 'A') {

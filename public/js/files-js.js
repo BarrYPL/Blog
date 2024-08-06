@@ -22,6 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function changeAllFunc(event) {
+      const checkboxes = document.querySelectorAll('#file-table tbody input[type="checkbox"]');
+      const isChecked = event.target.checked;
+      checkboxes.forEach(checkbox => {
+          checkbox.checked = isChecked;
+      });
+      handleCheckboxClick();
+  }
+
   function showCustomMenu(event) {
     event.preventDefault();
 
@@ -343,6 +352,10 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       fetchFiles(e.target.dataset.path);
     }
+  });
+
+  _('select_all').addEventListener('click', event => {
+    changeAllFunc(event);
   });
 
   document.addEventListener('click', event => {

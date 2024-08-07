@@ -253,7 +253,12 @@ class MyServer < Sinatra::Base
     @css = ["cms-styles"]
     @js = ["cms-js"]
     if current_user.is_admin?
-      unless $postsDB.select(:id).where(:id => params[:id]).first.nil?
+      post_to_delete = $postsDB.select(:id).where(:id => params[:id]).first
+      unless post_to_delete.nil?
+        post_files = $postsDB.select(:files_path).where(:id => params[:id]).first
+        unless post_files.nil?
+          delete_directory("/" + post_files[:files_path])
+        end
         $postsDB.select(:id).where(:id => params[:id]).delete
       else
         @error = "Invalid ID"
@@ -576,7 +581,7 @@ class MyServer < Sinatra::Base
   end
 
   def delete_directory(dir_path)
-    puts dir_path
+    #puts dir_path
     full_dir_path = File.join(settings.public_folder, 'writeups', dir_path)
     if File.exist?(full_dir_path) && File.directory?(full_dir_path)
       FileUtils.rm_rf(full_dir_path)

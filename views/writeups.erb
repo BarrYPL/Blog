@@ -1,0 +1,25 @@
+<h1>>/Writeups $</h1>
+<hr>
+<% @ctfs.each do |ctf| %>
+  <div class="ctf-group">
+    <h2><%= ctf %></h2>
+    <div class="writeups">
+      <% @writeups.select { |writeup| writeup[:ctf_name].to_s.downcase == ctf.to_s.downcase }.each do |writeup| %>
+        <div class="writeup-elem">
+          <div class="writeup">
+            <div class="writeup-title">
+              <a href="/post/<%= writeup[:id] %>"><h3><%= writeup[:title].titleize %></h3></a>
+            </div>
+            <div class="writeup-content">
+              <p><%= writeup[:content] %></p>
+            </div>
+          </div>
+          <div class="writeup-date">
+            <p><%= writeup[:date].strftime("%-d %b") %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <hr>
+<% end %>

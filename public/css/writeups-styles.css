@@ -1,0 +1,33 @@
+.ctf-group {
+  display: flex;
+  max-width: 100%;
+}
+
+.ctf-group h2 {
+  margin-right: 20px;
+  margin-bottom: 5px;
+  border-right: 1px solid #ccc;
+  padding-right: 20px;
+  min-width: 120px;
+}
+
+.writeup{
+  padding: 0px 10px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 600px;
+}
+
+.writeup-elem {
+  display: flex;
+  margin-bottom: 20px;
+  justify-content: space-between;
+}
+
+.writeup-date p {
+  width: 60px;
+  color: #888;
+}

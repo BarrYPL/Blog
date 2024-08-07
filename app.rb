@@ -61,6 +61,17 @@ class MyServer < Sinatra::Base
     erb :category
   end
 
+  get '/writeups' do
+    @css = ["writeups-styles"]
+    if current_user.is_admin?
+      @writeups = $postsDB.exclude(ctf_name: nil).exclude(ctf_name: '').all.each { |post| post[:content] = prepare_post(post[:content]) }
+    else
+      @writeups = $postsDB.where(is_public: 1).exclude(ctf_name: nil).exclude(ctf_name: '').all.each { |post| post[:content] = prepare_post(post[:content]) }
+    end
+    @ctfs = @writeups.map { |w| w[:ctf_name] }.uniq
+    erb :writeups
+  end
+
   get '/post/:id' do
     @js = ["post-js"]
     @css = ["post-styles"]

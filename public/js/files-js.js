@@ -143,6 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function handleEditClick(event) {
+    event.preventDefault();
+    const path = event.currentTarget.getAttribute('data-path');
+    document.location = '/edit-file' + path;
+  }
+
   async function handleBookmarkClick(event) {
     event.preventDefault();
     const isPublic = event.currentTarget.getAttribute('is_public');
@@ -281,6 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
         row.innerHTML = `
           <td><a href="#" class="directory-link" data-path="${data.path}/${file.name}" is_public="directory">${file.name}</a></td>
           <td><i class="fa-solid fa-folder"></i></td>
+          <td></td>
           <td><a href="#" data-path="${data.path.replace('/files', '')}/${file.name}" class="rename-link"><i class="fa-solid fa-file-signature"></i></a></td>
         `;
       } else {
@@ -288,12 +295,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const bookmarkClass = file.is_public ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark';
         const icon = fullPath.slice(-3) === 'zip' ? 'fa-solid fa-file-zipper' : 'fa-solid fa-file';
         row.innerHTML = `
-          <td><a href="/getfile${fullPath}" class="file-link" data-path="${fullPath}" is_public="${file.is_public}">${file.name}</a></td>
+          <td><a href="/showfile${fullPath}" class="file-link" data-path="${fullPath}" is_public="${file.is_public}">${file.name}</a></td>
           <td><i class="${icon}"></i></td>
+          <td class="download"><a href="/getfile${fullPath}" class="file-link" data-path="${fullPath}" is_public="${file.is_public}"><i class="fa-solid fa-file-arrow-down"></i></a></td>
           <td class="options">
             <a href="#" data-path="${fullPath}" class="rename-link"><i class="fa-solid fa-file-signature"></i></a>
             <a href="#" data-path="${fullPath}"><i class="fa-solid fa-trash"></i></a>
             <a href="#" data-path="${fullPath}" class="bookmark-link"><i class="${bookmarkClass}"></i></a>
+            <a href="#" data-path="${fullPath}" class="edit-link"><i class="fa-solid fa-pen-to-square"></i></a>
             <input type="checkbox" name="" value="${fullPath}">
           </td>
         `;
@@ -326,6 +335,11 @@ document.addEventListener('DOMContentLoaded', () => {
     fileTableBody.querySelectorAll('.rename-link').forEach(link => {
       link.addEventListener('click', handleRenameClick);
     });
+
+    fileTableBody.querySelectorAll('.edit-link').forEach((link) => {
+      link.addEventListener('click', handleEditClick)
+    });
+
 
     fileTableBody.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
       checkbox.addEventListener('click', handleCheckboxClick);

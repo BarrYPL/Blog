@@ -1,0 +1,36 @@
+<h1>>/Edit file $</h1>
+<hr>
+<div class="buttons-div" style="width: 100%;">
+  <a href="#" onclick="history.back()" class="main-button">cd ..</a>
+</div>
+<form id="post-form" action="/edit-file" method="post">
+  <p>File content:</p>
+  <textarea name="content" id="editor" placeholder="Type Here..."><% if @content %><%= @content %><% end %></textarea>
+  <input type="hidden" name="file_path" value="<%= @file_path %>">
+  <button type="submit">Save</button>
+</form>
+
+<script>
+  var easyMDE = new EasyMDE({ element: document.getElementById('editor') });
+
+  async function spellCheck(text) {
+    const response = await fetch('/spellcheck', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ content: text })
+    });
+
+    const data = await response.json();
+    return data.errors;
+  }
+
+  easyMDE.codemirror.on('change', async () => {
+    const text = easyMDE.value();
+    const errors = await spellCheck(text);
+    errors.forEach(error => {
+      console.log(`Error: ${error.message} at position ${error.offset}`);
+    });
+  });
+</script>

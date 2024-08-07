@@ -11,6 +11,7 @@ require 'erb'
 require 'cgi'
 require 'fileutils'
 require 'zip'
+require 'mime/types'
 require 'sinatra/reloader' if development?
 require_relative './PostFromFiles.rb'
 require_relative './GitWriteupCreator.rb'

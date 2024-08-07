@@ -10,7 +10,7 @@
     <h2><%= @categories.first %></h2>
   </div>
   <div class="posts">
-    <% @posts.take(2).each do |post| %>
+    <% @posts.each do |post| %>
       <div class="post-elem">
         <div class="post">
           <a href="/post/<%= post[:id] %>"><h2><%= post[:title] %></h2></a>

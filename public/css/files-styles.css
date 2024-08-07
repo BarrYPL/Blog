@@ -73,6 +73,10 @@ td a:hover::after{
   display: flex;
 }
 
+.download {
+  text-align: center;
+}
+
 #options-div {
   margin-top: 10px;
 }

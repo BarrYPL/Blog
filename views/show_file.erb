@@ -1,0 +1,11 @@
+<h1>>/Edit file $</h1>
+<hr>
+<div class="buttons-div" style="width: 100%;">
+  <% if current_user[:isAdmin] == 1 %>
+    <a href="/edit-file/<%= @file_name %>" class="main-button"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+  <% end %>
+  <a href="#" onclick="history.back()" class="main-button">cd ..</a>
+</div>
+<div class="post-container">
+  <%= @content %>
+</div>

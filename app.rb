@@ -108,6 +108,57 @@ class MyServer < Sinatra::Base
     erb :posts
   end
 
+  get '/edit-file/*' do
+    unless current_user.is_admin?
+      redirect '/error'
+    end
+    @css = ["new-post-styles"]
+    file_name = params[:splat].first
+    @file_path = File.join(settings.public_folder, 'writeups', file_name)
+    if is_text_file?(@file_path)
+      @content = File.read(@file_path)
+    else
+      @content = "File is not a text file."
+    end
+    erb :edit_file
+  end
+
+  post '/edit-file' do
+    unless current_user.is_admin?
+      redirect '/error'
+    end
+    content = params[:content]
+    file_path = params[:file_path]
+    if file_operation_exists_and_permitted?(file_path)
+      begin
+        File.open(file_path, 'w') do |file|
+          file.write(content)
+        end
+        redirect '/files'
+      rescue => e
+        puts "Błąd podczas zapisywania pliku: #{e.message}"
+        redirect '/error'
+      end
+    else
+      redirect '/error'
+    end
+  end
+
+  get '/showfile/*' do
+    unless current_user.is_admin?
+      redirect '/error'
+    end
+    @css = ["post-styles"]
+    @file_name = params[:splat].first
+    @file_path = File.join(settings.public_folder, 'writeups', @file_name)
+    if is_text_file?(@file_path)
+      @content = prepare_post(File.read(@file_path))
+    else
+      @content = "File is not a text file."
+    end
+    erb :show_file
+  end
+
   get '/edit/:id' do
     if current_user.is_admin?
       @js = ["new-post-js"]
@@ -176,13 +227,29 @@ class MyServer < Sinatra::Base
   end
 
   post '/edit-post' do
-    $postsDB.where(id: params[:id]).update(title: params[:title],
+    post_files = post_has_files?(params[:id])
+    unless post_files.nil?
+      writeup_file = File.join(settings.public_folder, 'writeups', post_files, 'solve/WRITEUP.md')
+      if file_operation_exists_and_permitted?(writeup_file)
+        begin
+          File.open(writeup_file, 'w') do |file|
+            file.write(params[:content])
+          end
+        rescue => e
+          puts "Błąd podczas zapisywania pliku: #{e.message}"
+          redirect '/error'
+        end
+      end
+    end
+    $postsDB.where(id: params[:id]).update(
+      title: params[:title],
       edited_date: Time.now,
       tags: params[:tags].strip.squeeze,
       author: current_user[:username],
       category: params[:category],
       content: params[:content],
-      is_public: params[:is_public])
+      is_public: params[:is_public]
+    )
     redirect "/post/#{find_post_title_by_id(params[:id])}"
   end
 
@@ -408,10 +475,6 @@ class MyServer < Sinatra::Base
       { success: success, message: message, error: error }.compact.to_json
     end
 
-    def file_operation_exists_and_permitted?(path)
-      File.exist?(path) && has_permission?(path)
-    end
-
     case action
     when "publish"
       if file
@@ -591,6 +654,10 @@ class MyServer < Sinatra::Base
     end
   end
 
+  def file_operation_exists_and_permitted?(path)
+    File.exist?(path) && has_permission?(path)
+  end
+
   def has_permission?(file_path)
     if current_user.is_admin?
       return true
@@ -650,6 +717,10 @@ class MyServer < Sinatra::Base
     $filesDB.where(path: full_path).all.first
   end
 
+  def post_has_files?(id)
+    $postsDB.select(:files_path).where(id: id).first[:files_path]
+  end
+
   def check_is_file_published(full_path)
     #Add here Sequel like with case insensitive it it's gonna make more troubles
     perm = $filesDB.select(:permission).where(path: full_path).first[:permission]
@@ -667,6 +738,11 @@ class MyServer < Sinatra::Base
   def prepare_post(markdown_content)
     html_content = settings.markdown.render(markdown_content)
     return html_content
+  end
+
+  def is_text_file?(file_path)
+    mime_type = MIME::Types.type_for(file_path).first
+    mime_type && mime_type.media_type == 'text'
   end
 
   def unzip_file(zip_file_path, destination_folder)

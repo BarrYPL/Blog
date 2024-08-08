@@ -61,3 +61,7 @@
 .post > div {
   padding: 0px 2px;
 }
+
+.buttons {
+  width: 100%;
+}

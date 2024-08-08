@@ -61,7 +61,7 @@ class MyServer < Sinatra::Base
     erb :category
   end
 
-  get '/writeups' do
+  get '/ctfs' do
     @css = ["writeups-styles"]
     if current_user.is_admin?
       @writeups = $postsDB.exclude(ctf_name: nil).exclude(ctf_name: '').all.each { |post| post[:content] = prepare_post(post[:content]) }

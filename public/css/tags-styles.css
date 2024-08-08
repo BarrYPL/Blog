@@ -45,3 +45,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.buttons {
+  width: 100%;
+}

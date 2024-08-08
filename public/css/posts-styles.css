@@ -31,3 +31,13 @@
   width: 60px;
   color: #888;
 }
+
+.sort-buttons {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.sort-buttons a{
+  margin-left: 10px;
+}

@@ -113,11 +113,29 @@ class MyServer < Sinatra::Base
   get '/posts' do
     @js = ["sanitizehtml-js"]
     @css = ["posts-styles"]
-    @posts = DB[:posts].where(:is_public => 1).order(Sequel.desc(:date)).all.each { |post| post[:content] = prepare_post(post[:content]) }
+
+    page = (params[:page] || 1).to_i
+    per_page = 6
+    offset = (page - 1) * per_page
+
+    @posts = DB[:posts]
+               .where(:is_public => 1)
+               .order(Sequel.desc(:date))
+               .limit(per_page)
+               .offset(offset)
+               .all
+               .each { |post| post[:content] = prepare_post(post[:content]) }
+
+    @total_posts = DB[:posts].where(:is_public => 1).count
+    @total_pages = (@total_posts / per_page.to_f).ceil
+    @current_page = page
+
     dates = @posts.map { |post| post[:date] }
     @years = dates.map { |date| date.year }.uniq
+
     erb :posts
   end
+
 
   get '/edit-file/*' do
     unless current_user.is_admin?

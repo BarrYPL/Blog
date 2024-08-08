@@ -1,4 +1,4 @@
-<h1>>/Posts $</h1>
+<h1>/Posts/[<%= @current_page * 6 - 5 %>:<%= [@current_page * 6, @total_posts].min %>]/<%= @total_posts %> $</h1>
 <div class="sort-buttons">
   <h3>Sort by:</h3>
   <a href="/categories" class="main-button">Categories</a>
@@ -11,14 +11,14 @@
     <div class="posts">
       <% @posts.select { |post| post[:date].year == year }.each do |post| %>
         <div class="post-elem">
-            <div class="post">
-              <div class="post-title">
-                <a href="/post/<%= post[:id] %>"><h3><%= post[:title].titleize %></h3></a>
-              </div>
-              <div class="post-content">
-                <p><%= post[:content] %></p>
-              </div>
+          <div class="post">
+            <div class="post-title">
+              <a href="/post/<%= post[:id] %>"><h3><%= post[:title].titleize %></h3></a>
             </div>
+            <div class="post-content">
+              <p><%= post[:content] %></p>
+            </div>
+          </div>
           <div class="post-date">
             <p><%= post[:date].strftime("%-d %b") %></p>
           </div>
@@ -28,3 +28,13 @@
   </div>
   <hr>
 <% end %>
+
+<div class="pagination">
+  <% if @current_page > 1 %>
+    <a href="/posts?page=<%= @current_page - 1 %>" class="main-button">Previous</a>
+    <a href="#" class="main-button"><%= @current_page %></a>
+  <% end %>
+  <% if @current_page < @total_pages %>
+    <a href="/posts?page=<%= @current_page + 1 %>" class="main-button">Next</a>
+  <% end %>
+</div>

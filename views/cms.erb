@@ -1,37 +1,39 @@
 <h1>/Posts CMS</h1>
 <hr>
-<table>
-  <tr>
-    <th>Lp.</th>
-    <th>Title</th>
-    <th>Text</th>
-    <th>Tags</th>
-    <th>Category</th>
-    <th>Author</th>
-    <th>Is public</th>
-    <th>Options</th>
-  </tr>
-  <% posts.each_with_index do |post, idx| %>
+<div class="table-holder">
+  <table>
     <tr>
-      <td><%= idx + 1 %>.</td>
-      <td><a href="/post/<%= post[:id] %>"><%= post[:title].titleize %></a></td>
-      <td><%= post[:content] %></td>
-      <td><%= post[:tags] %></td>
-      <td><%= post[:category] %></td>
-      <td><%= post[:author] %></td>
-      <td>
-        <form class="publish-form" method="post">
-          <input type="hidden" name="post_id" value="<%= post[:id] %>">
-          <% if post[:is_public] == 1 %>
-            <button type="submit" value="0" class="hide-gray" name="button">Hide</button>
-          <% else %>
-            <button type="submit" value="1" name="button">Publish</button>
-          <% end %>
-        </form>
-      </td>
-      <td>
-        <a href="/delete/<%= post[:id] %>" id="del-button-<%= post[:id] %>" class="main-button delete-button">Delete</a>
-      </td>
+      <th>Lp.</th>
+      <th>Title</th>
+      <th>Text</th>
+      <th>Tags</th>
+      <th>Category</th>
+      <th>Author</th>
+      <th>Is public</th>
+      <th>Options</th>
     </tr>
-  <% end %>
-</table>
+    <% posts.each_with_index do |post, idx| %>
+      <tr>
+        <td><%= idx + 1 %>.</td>
+        <td><a href="/post/<%= post[:id] %>"><%= post[:title].titleize %></a></td>
+        <td><%= post[:content] %></td>
+        <td><%= post[:tags] %></td>
+        <td><%= post[:category] %></td>
+        <td><%= post[:author] %></td>
+        <td>
+          <form class="publish-form" method="post">
+            <input type="hidden" name="post_id" value="<%= post[:id] %>">
+            <% if post[:is_public] == 1 %>
+              <button type="submit" value="0" class="hide-gray" name="button">Hide</button>
+            <% else %>
+              <button type="submit" value="1" name="button">Publish</button>
+            <% end %>
+          </form>
+        </td>
+        <td>
+          <a href="/delete/<%= post[:id] %>" id="del-button-<%= post[:id] %>" class="main-button delete-button">Delete</a>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+</div>

@@ -41,3 +41,13 @@
 .sort-buttons a{
   margin-left: 10px;
 }
+
+.posts {
+  overflow: auto;
+}
+
+@media (max-width: 800px) {
+  .year-group h2 {
+    min-width: auto;
+  }
+}

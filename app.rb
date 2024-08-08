@@ -378,6 +378,7 @@ class MyServer < Sinatra::Base
 
   post '/new-writeup/:stage' do
     @css = ["new-post-styles", "new-writeup-styles"]
+    @js = ["new-writeup-js"]
     unless current_user.is_admin?
       redirect '/error'
     end

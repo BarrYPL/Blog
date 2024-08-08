@@ -31,3 +31,7 @@
   width: 60px;
   color: #888;
 }
+
+.writeups {
+  overflow: auto;
+}

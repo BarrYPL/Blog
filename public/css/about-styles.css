@@ -26,3 +26,13 @@
 .author img {
   border-radius: 50%;
 }
+
+@media (max-width: 800px) {
+  .about-content {
+    flex-direction: column;
+  }
+
+  .about-text {
+    border: none;
+  }
+}

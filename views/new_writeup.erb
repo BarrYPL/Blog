@@ -1,5 +1,14 @@
 <h1>>/New Writeup $</h1>
 <hr>
+<div class="steps">
+  <span class="circle active">1</span>
+  <span class="circle">2</span>
+  <span class="circle">3</span>
+  <span class="circle">4</span>
+  <div class="progress-bar">
+    <span class="indicator"></span>
+  </div>
+</div>
 <div class="writeup-form-container">
   <% unless params[:stage] %>
   <h2>Stage 1</h2>
@@ -14,25 +23,25 @@
   <% else %>
     <% if params[:stage].to_i == 1 %>
     <h2>Stage 2</h2>
-    <p>Describe task:</p>
     <form class="images-form" action="/new-writeup/2" method="post" enctype="multipart/form-data">
       <p>Task description:</p>
       <textarea name="content" id="editor" placeholder="Description here..."><% if @post %><%= @post[:content] %><% end %></textarea>
-      <p>Upload files:</p>
-      <input type="file" name="files[]" multiple>
+      <div class="file-uploader">
+        <p>Upload files:</p>
+        <label for="file-upload" class="main-button"><i class="fa-solid fa-file-import"></i> Add files</label>
+        <input type="file" name="files[]" multiple></input>
+      </div>
       <button type="submit">Submit</button>
     </form>
     <% elsif params[:stage].to_i == 2 %>
     <h2>Stage 3</h2>
-    <p>Upload Your Images:</p>
     <form class="images-form" action="/new-writeup/3" method="post" enctype="multipart/form-data">
-      <p>Upload images:</p>
+      <p>Upload images for mian text:</p>
       <input type="file" name="files[]" multiple>
       <button type="submit">Submit</button>
     </form>
     <% elsif params[:stage].to_i == 3 %>
     <h2>Stage 4</h2>
-    <p>Add writeup:</p>
     <form id="post-form" action="/new-writeup/4" method="post">
       <p>Select category:</p>
       <input type="text" name="category" placeholder="Select category">

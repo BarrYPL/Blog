@@ -57,6 +57,10 @@ strong {
   color: #fa0200;
 }
 
+.buttons {
+  width: 100%;
+}
+
 .anonymous-pro-regular {
   font-family: "Anonymous Pro", monospace;
   font-weight: 400;

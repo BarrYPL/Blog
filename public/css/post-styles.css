@@ -67,6 +67,15 @@ p:has(> img) {
   text-align:center;
 }
 
+.reading-info {
+  display: flex;
+  width: 100%;
+}
+
+.reading-info p{
+  color: #999;
+}
+
 .k {
   color: #000988;
   font-weight: bold;

@@ -7,6 +7,9 @@
     <a href="#" onclick="history.back()" class="main-button">cd ..</a>
   </div>
 </div>
+<div class="reading-info">
+  <p><i class="fa-regular fa-clock"></i> Estimated reading time: <%= (@post[:content] + @post[:publish_content]).reading_time %></p>
+</div>
 <hr>
 <div class="post-container">
   <% unless @post[:ctf_name].nil? %>

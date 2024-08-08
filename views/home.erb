@@ -1,3 +1,25 @@
 <h1>>/Home $</h1>
 <hr>
 <p><strong>Hi,</strong> nice to see You on website, where I share my knowledge in ethical <strong>hacking</strong>. You'll find Capture The Flag <strong>write-ups</strong>, blog posts, and more. Additionally, I'll be hosting a series of posts specifically designed for complete beginners, introducing them to the exciting field of <strong>cybersecurity</strong>. I'm happy to share my thoughts, experiences, and knowledge with you!</p>
+<hr>
+<div class="recent-posts">
+<h2>Recent posts</h2>
+  <% $postsDB.order(Sequel.desc(:date)).limit(3).all.each do |post| %>
+    <div class="post-elem">
+        <div class="post">
+          <div class="post-title">
+            <a href="/post/<%= post[:id] %>"><h3><%= post[:title].titleize %></h3></a>
+          </div>
+          <div class="post-content">
+            <p><%= post[:content] %></p>
+          </div>
+        </div>
+      <div class="post-date">
+        <p><%= post[:date].strftime("%-d.%m.%Y") %>r</p>
+      </div>
+    </div>
+  <% end %>
+  <div class="see-more">
+    <a href="/posts"><h3>See more...</h3></a>
+  </div>
+</div>

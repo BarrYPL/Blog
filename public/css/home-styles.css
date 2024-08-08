@@ -1,0 +1,46 @@
+.post{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.post-elem {
+  display: flex;
+  margin-bottom: 20px;
+  justify-content: space-between;
+}
+
+.post-date p {
+  width: 90px;
+  color: #888;
+}
+
+.sort-buttons {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.sort-buttons a{
+  margin-left: 10px;
+}
+
+.recent-posts {
+  width: 100%;
+}
+
+.recent-posts h2 {
+  margin-bottom: 20px;
+}
+
+.see-more {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.see-more a{
+  display: block;
+  width: max-content;
+}

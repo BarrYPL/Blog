@@ -4,7 +4,7 @@
 <hr>
 <div class="recent-posts">
 <h2>Recent posts</h2>
-  <% $postsDB.order(Sequel.desc(:date)).limit(3).all.each do |post| %>
+  <% $postsDB.where(is_public: 1).order(Sequel.desc(:date)).limit(3).all.each do |post| %>
     <div class="post-elem">
         <div class="post">
           <div class="post-title">

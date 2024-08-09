@@ -8,7 +8,7 @@
   </div>
 </div>
 <div class="reading-info">
-  <p><i class="fa-regular fa-clock"></i> Estimated reading time: <%= (@post[:content] + @post[:publish_content]).reading_time %></p>
+  <p><i class="fa-regular fa-clock"></i> Estimated reading time: <%= (@post[:content].to_s + @post[:publish_content].to_s).reading_time %></p>
 </div>
 <hr>
 <div class="post-container">

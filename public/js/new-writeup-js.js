@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function getStageFromUrl() {
     const urlParts = window.location.pathname.split('/');
     const stage = urlParts[urlParts.length - 1];
-    return parseInt(stage) || 1;
+    return parseInt(stage) || 0;
   }
 
   const updateDOM = () => {

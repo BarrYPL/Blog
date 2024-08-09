@@ -397,7 +397,7 @@ class MyServer < Sinatra::Base
       save_files(files: params[:files], base_path: $creator.get_publish_path)
     when 3
       #upload images
-      @js = ["new-writeup-images-js"]
+      @js = ["new-writeup-images-js", "new-writeup-js"]
       save_files(files: params[:files], base_path: $creator.get_solve_path, sub_directory: 'images')
     when 4
       #add everything to db and save in readme.md
@@ -676,7 +676,7 @@ class MyServer < Sinatra::Base
   end
 
   def delete_directory(dir_path)
-    puts dir_path
+    #puts dir_path
     if File.exist?(dir_path) && File.directory?(dir_path)
       FileUtils.rm_rf(dir_path)
       { success: true, message: "File successfully deleted" }.to_json

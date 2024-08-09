@@ -3,9 +3,12 @@ source 'https://rubygems.org'
 gem 'sinatra'
 gem 'redcarpet'
 gem 'rouge'
-gem 'json'
-gem 'puma'
-
-gem "sequel", "~> 5.82"
-
-gem "bcrypt", "~> 3.1"
+gem 'sequel'
+gem 'bcrypt'
+gem 'erb'
+gem 'cgi'
+gem 'fileutils'
+gem 'zip'
+gem 'mime-types', require: 'mime/types'
+gem 'readingtime'
+gem 'sinatra-contrib', require: ['sinatra/reloader']

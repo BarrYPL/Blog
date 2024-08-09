@@ -29,7 +29,7 @@
       <div class="file-uploader">
         <p>Upload files:</p>
         <label for="file-upload" class="main-button"><i class="fa-solid fa-file-import"></i> Add files</label>
-        <input type="file" name="files[]" multiple></input>
+        <input id="file-upload" type="file" name="files[]" multiple></input>
       </div>
       <button type="submit">Submit</button>
     </form>
@@ -37,7 +37,8 @@
     <h2>Stage 3</h2>
     <form class="images-form" action="/new-writeup/3" method="post" enctype="multipart/form-data">
       <p>Upload images for mian text:</p>
-      <input type="file" name="files[]" multiple>
+      <label for="file-upload" class="main-button"><i class="fa-solid fa-file-import"></i> Add files</label>
+      <input id="file-upload" type="file" name="files[]" multiple></input>
       <button type="submit">Submit</button>
     </form>
     <% elsif params[:stage].to_i == 3 %>

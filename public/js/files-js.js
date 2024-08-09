@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let multiDeleteButton;
   let currentPath = '';
 
+  function getPath(){
+    let path = _('currentPath').textContent.replace('/files', '');
+    return path;
+  }
+
   async function fetchFiles(path_to_fetch = '') {
     try {
       const response = await fetch(path_to_fetch, { method: 'POST' });
@@ -138,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.error) {
         customAlert('Error: ' + data.error, 'error');
       } else {
-        fetchFiles(currentPath);
+        fetchFiles(currentPathDisplay.textContent);
       }
     }
   }
@@ -171,7 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function handleDeleteClick(event) {
     event.preventDefault();
-    const path = event.currentTarget.getAttribute('data-path');
+
+    const path = event.currentTarget.getAttribute('data-path').replace('/files','');
     if (confirm('Are you sure you want to delete this file?')) {
       const data = await handleFileOperation('/manage-files', { path, action: 'delete' });
       if (data.success) {
@@ -250,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fileTableBody.innerHTML = '';
     currentPathDisplay.textContent = data.path;
     optionsDiv.innerHTML = '';
+    const fileCount = data.files.filter(file => !file.is_directory).length;
 
     if (data.parent_path !== '/') {
       const cdParent = createElement('a', {
@@ -263,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const mkdirButton = createElement('a', {
       href: '#',
-      dataset: { path: data.path },
+      dataset: { path: data.path.replace('/files','') },
       className: 'main-button',
       textContent: 'MKDIR',
       id: 'mkdir-button'
@@ -340,7 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
       link.addEventListener('click', handleEditClick)
     });
 
-
     fileTableBody.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
       checkbox.addEventListener('click', handleCheckboxClick);
     });
@@ -352,6 +358,16 @@ document.addEventListener('DOMContentLoaded', () => {
     fileTableBody.querySelectorAll('.directory-link').forEach(link => {
       link.addEventListener('contextmenu', showCustomMenuDirectories);
     });
+
+    if (fileCount < 2) {
+      document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.style.display = 'none';
+      });
+    } else {
+      document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.style.display = 'inline';
+      });
+    }
   }
 
   document.querySelector('.file-browser-container').addEventListener('click', e => {
@@ -454,7 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const url = '/files-upload';
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('path', currentPathDisplay.textContent.replace('/files', ''));
+    formData.append('path', getPath());
 
     fetch(url, {
       method: 'POST',

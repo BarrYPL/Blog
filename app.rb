@@ -143,7 +143,7 @@ class MyServer < Sinatra::Base
     end
     @css = ["new-post-styles"]
     file_name = params[:splat].first
-    @file_path = File.join(settings.public_folder, 'writeups', file_name)
+    @file_path = File.join(settings.public_folder, file_name)
     if is_text_file?(@file_path)
       @content = File.read(@file_path)
     else
@@ -179,7 +179,7 @@ class MyServer < Sinatra::Base
     end
     @css = ["post-styles"]
     @file_name = params[:splat].first
-    @file_path = File.join(settings.public_folder, 'writeups', @file_name)
+    @file_path = File.join(settings.public_folder, @file_name)
     if is_text_file?(@file_path)
       @content = prepare_post(File.read(@file_path))
     else
@@ -470,7 +470,7 @@ class MyServer < Sinatra::Base
       path = params[:path]
       file_name = params[:file][:filename]
       file = params[:file][:tempfile]
-      file_path = File.join(settings.public_folder, 'writeups', path, file_name)
+      file_path = File.join(settings.public_folder, path, file_name)
 
       if File.exist?(file_path)
         { success: false, message: 'File already exists', filename: file_name }.to_json
@@ -494,7 +494,7 @@ class MyServer < Sinatra::Base
     data = JSON.parse(request.body.read)
     action = data['action']
     file_path = data['path'].gsub('/files', '')
-    full_path = File.join(settings.public_folder, 'writeups', file_path)
+    full_path = File.join(settings.public_folder, file_path)
     file = find_file_in_db(full_path)
 
     def update_db(path, updates)
@@ -531,7 +531,7 @@ class MyServer < Sinatra::Base
             $filesDB.where(path: full_path).delete
           end
         else
-          delete_directory(full_path.gsub('public/writeups',''))
+          delete_directory(full_path)
         end
         json_response(success: true, message: "File successfully deleted")
       else
@@ -540,7 +540,7 @@ class MyServer < Sinatra::Base
 
     when "rename"
       new_path = data['newPath']
-      full_new_path = File.join(settings.public_folder, 'writeups', new_path)
+      full_new_path = File.join(settings.public_folder, new_path)
 
       if file_operation_exists_and_permitted?(full_path)
         File.rename(full_path, full_new_path)
@@ -552,7 +552,7 @@ class MyServer < Sinatra::Base
 
     when "unzip"
       location = data['currentPath']
-      full_location_path = File.join(settings.public_folder, 'writeups', location)
+      full_location_path = File.join(settings.public_folder, location)
 
       if file_operation_exists_and_permitted?(full_path)
         file_count = unzip_file(full_path, full_location_path)
@@ -573,7 +573,8 @@ class MyServer < Sinatra::Base
     end
 
     dir_path = params[:splat].first
-    delete_directory(dir_path)
+    full_dir_path = File.join(settings.public_folder, dir_path)
+    delete_directory(full_dir_path)
   end
 
   post '/mkdir' do
@@ -586,7 +587,8 @@ class MyServer < Sinatra::Base
     data = JSON.parse(request.body.read)
     data_path = data["path"].gsub('/files','')
     data_name = data["name"]
-    new_dir_path = File.join(settings.public_folder, 'writeups', data_path, data_name)
+
+    new_dir_path = File.join(settings.public_folder, data_path, data_name)
     if Dir.exist?(new_dir_path)
       { error: 'Directory already exists' }.to_json
     else
@@ -674,10 +676,9 @@ class MyServer < Sinatra::Base
   end
 
   def delete_directory(dir_path)
-    #puts dir_path
-    full_dir_path = File.join(settings.public_folder, 'writeups', dir_path)
-    if File.exist?(full_dir_path) && File.directory?(full_dir_path)
-      FileUtils.rm_rf(full_dir_path)
+    puts dir_path
+    if File.exist?(dir_path) && File.directory?(dir_path)
+      FileUtils.rm_rf(dir_path)
       { success: true, message: "File successfully deleted" }.to_json
     else
       { success: false, error: "Dir not found or permission denied" }.to_json
@@ -704,7 +705,7 @@ class MyServer < Sinatra::Base
   end
 
   def get_file(file_path)
-    full_path = File.join(settings.public_folder, 'writeups', file_path)
+    full_path = File.join(settings.public_folder, file_path)
 
     if File.exist?(full_path) && has_permission?(full_path)
       send_file full_path, :filename => File.basename(full_path), :type => 'Application/octet-stream'
@@ -718,8 +719,8 @@ class MyServer < Sinatra::Base
       halt 403, { error: 'Forbidden' }.to_json
     end
 
-    base_folder = File.join(settings.public_folder, 'writeups', path)
-
+    base_folder = File.join(settings.public_folder, path)
+    #puts base_folder
     if Dir.exist?(base_folder)
       entries = Dir.entries(base_folder).select { |entry| entry != '.' && entry != '..' }
 

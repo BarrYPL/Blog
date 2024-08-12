@@ -1,3 +1,4 @@
-# Ignore
-db/db_init.rb
-db/db_faker.rb
+# Ignore entire db directory
+db/
+# Ignore entire public/writeups directory
+public/writeups/

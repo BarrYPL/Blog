@@ -1,6 +1,7 @@
 .ctf-group {
   display: flex;
-  max-width: 100%;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .ctf-group h2 {
@@ -8,7 +9,7 @@
   margin-bottom: 5px;
   border-right: 1px solid #ccc;
   padding-right: 20px;
-  min-width: 120px;
+  min-width: 150px;
 }
 
 .writeup{
@@ -34,4 +35,5 @@
 
 .writeups {
   overflow: auto;
+  width: 100%;
 }

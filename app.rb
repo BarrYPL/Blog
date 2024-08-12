@@ -27,7 +27,7 @@ class MyServer < Sinatra::Base
     set :public_folder  , 'public'
     set :views          , 'views'
     set :port           , '80'
-    set :bind           , '0.0.0.0'
+    set :bind           , '::' #Forgot about IPv6
     set :show_exceptions, 'true' #Those are errors
   end
 

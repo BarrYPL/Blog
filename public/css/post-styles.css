@@ -28,6 +28,15 @@
   width: 100%;
 }
 
+blockquote {
+  padding: 10px;
+  background: #121212;
+}
+
+blockquote > * {
+  margin-left: 10px;
+}
+
 pre {
   padding: 15px;
   overflow: auto;

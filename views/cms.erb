@@ -16,7 +16,7 @@
       <tr>
         <td><%= idx + 1 %>.</td>
         <td><a href="/post/<%= post[:id] %>"><%= post[:title].titleize %></a></td>
-        <td><%= post[:content] %></td>
+        <td id="post-text"><%= post[:content] %></td>
         <td><%= post[:tags] %></td>
         <td><%= post[:category] %></td>
         <td><%= post[:author] %></td>

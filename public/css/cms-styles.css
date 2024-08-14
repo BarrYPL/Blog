@@ -45,3 +45,7 @@ td button:hover {
 .hide-gray {
   background: #999;
 }
+
+#post-text{
+  display: block;
+}

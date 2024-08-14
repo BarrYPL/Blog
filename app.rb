@@ -52,6 +52,16 @@ class MyServer < Sinatra::Base
     erb :categories
   end
 
+  get '/backup' do
+    if current_user.is_admin?
+      backup_file = 'db/backup.db'
+      FileUtils.cp('db/database.db', backup_file)
+      send_file backup_file, type: 'application/octet-stream', filename: 'backup.db'
+    else
+      redirect '/error'
+    end
+  end
+
   get '/categories/:category' do
     @css = ["categories-styles"]
     category_param = params[:category]

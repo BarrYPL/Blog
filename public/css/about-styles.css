@@ -25,6 +25,7 @@
 
 .author img {
   border-radius: 50%;
+  max-width: 192px;
 }
 
 @media (max-width: 800px) {

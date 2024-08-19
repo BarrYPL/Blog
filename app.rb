@@ -361,7 +361,7 @@ class MyServer < Sinatra::Base
     if current_user.is_admin?
       post_to_delete = $postsDB.select(:id).where(:id => params[:id]).first
       unless post_to_delete.nil?
-        post_files = $postsDB.select(:files_path).where(:id => params[:id]).first
+        post_files = $postsDB.select(:files_path).where(:id => params[:id]).first[:post_files]
         unless post_files.nil?
           delete_directory("/" + post_files[:files_path])
         end

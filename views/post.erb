@@ -17,4 +17,7 @@
     <hr>
   <% end %>
   <p><%= @post[:content] %></p>
+  <% unless @post[:attachment].nil? %>
+    <%= @post[:attachment] %>
+  <% end %>
 </div>

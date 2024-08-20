@@ -18,14 +18,15 @@ class PostFromFiles
       category: @category,
       is_public: @is_public,
       ctf_name: @ctf_name,
-      publish_content: @publish_content
+      publish_content: @publish_content,
+      attachment: @attachment
     }
   end
 
   private
 
   def fetch_post_details
-    result = @database.select(:title, :files_path, :date, :tags, :author, :category, :is_public, :ctf_name).where(id: @id).first
+    result = @database.select(:title, :files_path, :date, :tags, :author, :category, :is_public, :ctf_name, :attachment).where(id: @id).first
     if result
       @title = result[:title]
       @path = result[:files_path]
@@ -37,6 +38,7 @@ class PostFromFiles
       @content = update_images(File.open("public/writeups/#{@path}/solve/WRITEUP.md").read, "/writeups/#{@path}/solve/")
       @ctf_name = result[:ctf_name]
       @publish_content = update_links(File.open("public/writeups/#{@path}/README.md").read)
+      @attachment = result[:attachment]
     else
       @title = nil
       @path = nil
@@ -48,6 +50,7 @@ class PostFromFiles
       @content = nil
       @ctf_name = nil
       @publish_content = nil
+      @attachment = nil
     end
   end
 

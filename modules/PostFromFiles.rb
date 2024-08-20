@@ -57,7 +57,7 @@ class PostFromFiles
   def update_links(text)
     #old_link = text.match(/(?<=\/)[^)]*\/[^)]*(?=\))/) #Match [./file/name] as file/name
     old_link = text.match(/(?<=\.\/)[^)]*\/[^)]*(?=\))/) #New regex
-    updated_link =  "getfile/#{@path.gsub('\\','/')}/#{old_link}"#.gsub(" ",'%20') #Makes link to getfile endpoint
+    updated_link =  "getfile/writeups/#{@path.gsub('\\','/')}/#{old_link}"#.gsub(" ",'%20') #Makes link to getfile endpoint
     text.gsub(/(?<=\()[^)]*(?=\))/, updated_link)
   end
 

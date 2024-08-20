@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPath = '';
 
   function getPath(){
-    let path = _('currentPath').textContent.replace('/files', '');
+    let path = _('current-path').textContent.replace('/files', '');
     return path;
   }
 

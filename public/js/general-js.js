@@ -107,4 +107,24 @@ window.addEventListener("load", function(evt){
   }
 
   loopTypeDelete();
+
+  function showImageInOverlay(src) {
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+
+        const img = document.createElement('img');
+        img.src = src;
+        overlay.appendChild(img);
+        overlay.addEventListener('click', function() {
+            document.body.removeChild(overlay);
+        });
+
+        document.body.appendChild(overlay);
+    }
+
+    document.querySelectorAll('img').forEach(function(image) {
+        image.addEventListener('click', function() {
+            showImageInOverlay(image.src);
+        });
+    });
 })

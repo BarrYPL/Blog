@@ -31,7 +31,9 @@
           </form>
         </td>
         <td>
-          <a href="/delete/<%= post[:id] %>" id="del-button-<%= post[:id] %>" class="main-button delete-button">Delete</a>
+          <a href="/delete/<%= post[:id] %>" id="del-button-<%= post[:id] %>" class="table-button delete-button"><i class="fa-solid fa-trash-can"></i></a>
+          <a href="/edit/<%= post[:id] %>" class="table-button"><i class="fa-solid fa-pen"></i></a>
+          <a href="/edit-attachment/<%= post[:id] %>" class="table-button"><i class="fa-solid fa-pen-to-square"></i></a>
         </td>
       </tr>
     <% end %>

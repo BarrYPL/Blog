@@ -99,6 +99,20 @@ strong {
   background-color: #ccc;
 }
 
+.table-button {
+  display: inline-block;
+  padding: 5px 6px;
+  background-color: #121212;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.table-button:hover {
+  background-color: #ccc;
+}
+
 .menu li {
   margin: 0 12px;
 }

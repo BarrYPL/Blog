@@ -146,12 +146,12 @@ class MyServer < Sinatra::Base
     erb :posts
   end
 
-
   get '/edit-file/*' do
     unless current_user.is_admin?
       redirect '/error'
     end
     @css = ["new-post-styles"]
+    @action_endpoint = "/edit-file"
     file_name = params[:splat].first
     @file_path = File.join(settings.public_folder, file_name)
     if is_text_file?(@file_path)
@@ -181,6 +181,25 @@ class MyServer < Sinatra::Base
     else
       redirect '/error'
     end
+  end
+
+  get '/edit-attachment/:id' do
+    if current_user.is_admin?
+      @js = ["new-post-js"]
+      @error = " "
+      @post = $postsDB.where(id: params[:id]).all.first
+      @action_endpoint = "/edit-attachment"
+      @content = @post[:attachment]
+      @css = ["new-post-styles"]
+      return erb :edit_file
+    end
+
+    redirect '/error'
+  end
+
+  post '/edit-attachment' do
+    $postsDB.where(id: params[:id]).update(attachment: params[:content])
+    redirect "/post/#{find_post_title_by_id(params[:id])}"
   end
 
   get '/showfile/*' do

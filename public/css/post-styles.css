@@ -9,7 +9,7 @@
   display: flex;
 }
 
-.buttons-div > :first-child {
+.buttons-div > :not(:last-child) {
   margin-right: 10px;
 }
 

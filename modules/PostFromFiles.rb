@@ -19,7 +19,8 @@ class PostFromFiles
       is_public: @is_public,
       ctf_name: @ctf_name,
       publish_content: @publish_content,
-      attachment: @attachment
+      attachment: @attachment,
+      path: @path
     }
   end
 

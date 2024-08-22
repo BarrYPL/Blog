@@ -46,6 +46,15 @@ td button:hover {
   background: #999;
 }
 
+.folder {
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.file {
+  margin-left: 40px;
+}
+
 #post-text{
   display: block;
 }

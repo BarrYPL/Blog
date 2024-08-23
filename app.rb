@@ -831,20 +831,27 @@ class MyServer < Sinatra::Base
 
   def generate_tree(path, prefix = '', is_last = true)
     items = Dir.entries(path) - %w[. ..]
-    items.sort.each_with_index.map do |item, index|
+    directories = items.select { |item| File.directory?(File.join(path, item)) }
+    files = items.select { |item| !File.directory?(File.join(path, item)) }
+    sorted_items = directories.sort + files.sort
+    sorted_items.each_with_index.map do |item, index|
       full_path = File.join(path, item)
-      is_last_item = index == items.size - 1
+      is_last_item = index == sorted_items.size - 1
       new_prefix = prefix + (is_last_item ? '    ' : '│   ')
+
       if File.directory?(full_path)
+        # Dla katalogu
         encoded_path = URI.encode_www_form_component(full_path)
         folder_html = "#{prefix}#{is_last_item ? '└───' : '├───'}<span class='folder' data-folder-id='#{encoded_path}' onclick=\"toggleFolder('#{encoded_path}', '#{new_prefix}')\">[+] #{item}</span><br>"
         folder_html += "<div id='#{encoded_path}' class='folder-content' style='display: none;'></div>"
         folder_html
       else
-        "#{prefix.strip}#{is_last_item ? '└───' : '├───'}#{item}<br>"
+        # Dla pliku
+        "#{prefix}#{is_last_item ? '└───' : '├───'}#{item}<br>"
       end
     end.join
   end
+
 
   helpers do
    def current_user

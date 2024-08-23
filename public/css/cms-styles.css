@@ -55,6 +55,20 @@ td button:hover {
   margin-left: 40px;
 }
 
+.files-pre-holder pre{
+  width: 400px;
+}
+
+.folder {
+  cursor: pointer;
+}
+
+a.file {
+  background: #07ef0787;
+  padding: 1px;
+  border-radius: 10px;
+}
+
 #post-text{
   display: block;
 }

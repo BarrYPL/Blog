@@ -3,7 +3,9 @@
   <div class="buttons-div">
     <% if current_user[:isAdmin] == 1 %>
       <a href="/edit/<%= @post[:id] %>" class="main-button"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
-      <a href="/edit-file/writeups/<%= @post[:path] %>/README.md" class="main-button"><i class="fa-solid fa-pen-to-square"></i> Edit README</a>
+      <% unless @post[:ctf_name].nil? %>
+        <a href="/edit-file/writeups/<%= @post[:path] %>/README.md" class="main-button"><i class="fa-solid fa-pen-to-square"></i> Edit README</a>
+      <% end %>
     <% end %>
     <a href="#" onclick="history.back()" class="main-button">cd ..</a>
   </div>

@@ -11,7 +11,7 @@
   </div>
 </div>
 <div class="reading-info">
-  <p><i class="fa-regular fa-clock"></i> Estimated reading time: <%= (@post[:content].to_s + @post[:publish_content].to_s).reading_time %></p>
+  <p><i class="fa-regular fa-clock"></i> Estimated reading time: <%= (@post[:content].to_s + @post[:publish_content].to_s).reading_time :format => :approx %></p>
 </div>
 <hr>
 <div class="post-container">

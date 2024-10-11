@@ -45,7 +45,11 @@ class String
     self.match?(/\A\d+\z/)
   end
 
-  def trimmed_to_preview
+  def trimm_to_preview
     self[0..350]
+  end
+
+  def remove_some_html_tags
+    self.gsub(/<\/?(code|pre|img)[^>]*>/, '')
   end
 end

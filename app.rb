@@ -232,7 +232,7 @@ class MyServer < Sinatra::Base
 
   post '/tags/:tag' do
     tag_param = params[:tag].downcase
-    @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post[:content]).trimmed_to_preview }
+    @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post[:content]).remove_some_html_tags.trimm_to_preview }
     @posts.select! do |post|
       tags = post[:tags].split(',').map(&:strip).map(&:downcase)
       tags.include?(tag_param)

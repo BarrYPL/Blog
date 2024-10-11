@@ -9,14 +9,18 @@
       <h2><a href="/categories/<%= category %>"><%= category.capitalize %></a></h2>
     </div>
     <div class="posts">
-      <% @posts.select { |post| post[:category].split(',').include?(category) }.take(2).each do |post| %>
-        <div class="post-elem">
+      <% @posts.select { |post| post[:category].split(',').include?(category) }
+               .sort_by { |post| post[:date] }
+               .reverse
+               .take(2)
+               .each do |post| %>
+    <div class="post-elem">
           <div class="post">
             <div class="post-title">
               <a href="/post/<%= post[:id] %>"><h2><%= post[:title].titleize %></h2></a>
             </div>
             <div class="post-content">
-              <p><%= post[:content] %></p>
+              <p><%= post[:content].trimmed_to_preview %></p>
             </div>
           </div>
           <div class="post-date">

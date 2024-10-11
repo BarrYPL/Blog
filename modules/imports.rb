@@ -44,4 +44,8 @@ class String
   def numbers_only?
     self.match?(/\A\d+\z/)
   end
+
+  def trimmed_to_preview
+    self[0..350]
+  end
 end

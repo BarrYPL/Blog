@@ -47,19 +47,9 @@ class MyServer < Sinatra::Base
     @js = ["sanitizehtml-js"]
     @css = ["categories-styles"]
     @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post[:content]) }
-    @categories = @posts.flat_map { |post| post[:category].split(',') }.uniq
+    @categories = @posts.flat_map { |post| post[:category].split(',').map(&:capitalize) }.uniq
     @categories.sort_by! { |category| category.downcase == 'intro' ? '' : category.downcase }
     erb :categories
-  end
-
-  get '/backup' do
-    if current_user.is_admin?
-      backup_file = 'db/backup.db'
-      FileUtils.cp('db/database.db', backup_file)
-      send_file backup_file, type: 'application/octet-stream', filename: 'backup.db'
-    else
-      redirect '/error'
-    end
   end
 
   get '/categories/:category' do
@@ -134,7 +124,7 @@ class MyServer < Sinatra::Base
                .limit(per_page)
                .offset(offset)
                .all
-               .each { |post| post[:content] = prepare_post(post[:content]) }
+               .each { |post| post[:content] = post[:content] }
 
     @total_posts = DB[:posts].where(:is_public => 1).count
     @total_pages = (@total_posts / per_page.to_f).ceil
@@ -242,7 +232,7 @@ class MyServer < Sinatra::Base
 
   post '/tags/:tag' do
     tag_param = params[:tag].downcase
-    @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post[:content]) }
+    @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post[:content]).trimmed_to_preview }
     @posts.select! do |post|
       tags = post[:tags].split(',').map(&:strip).map(&:downcase)
       tags.include?(tag_param)
@@ -522,7 +512,6 @@ class MyServer < Sinatra::Base
     end
   end
 
-
   post '/manage-files' do
     content_type :json
 
@@ -679,6 +668,16 @@ class MyServer < Sinatra::Base
   get '/file-error' do
     @css = ["error404-styles"]
     erb :file_error
+  end
+
+  get '/backup' do
+    if current_user.is_admin?
+      backup_file = 'db/backup.db'
+      FileUtils.cp('db/database.db', backup_file)
+      send_file backup_file, type: 'application/octet-stream', filename: 'backup.db'
+    else
+      redirect '/error'
+    end
   end
 
 #Spellcheck kinda works for now

@@ -34,17 +34,20 @@ class MyServer < Sinatra::Base
   set :markdown, Redcarpet::Markdown.new(HTMLWithPygments.new, fenced_code_blocks: true, :smartypants => true)
 
   get '/' do
+    @title = '>/Home $'
     @css = ["home-styles"]
     erb :home
   end
 
   get '/about' do
+    @title = '>/Whoami $'
     @css = ["about-styles"]
     erb :about
   end
 
   get '/categories' do
-    @js = ["sanitizehtml-js"]
+    @title = '>/Categories $'
+    @js = ["sanitizehtml-script"]
     @css = ["categories-styles"]
     @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post[:content]) }
     @categories = @posts.flat_map { |post| post[:category].split(',').map(&:capitalize) }.uniq
@@ -62,6 +65,7 @@ class MyServer < Sinatra::Base
   end
 
   get '/ctfs' do
+    @title = '>/Ctfs $'
     @css = ["writeups-styles"]
     if current_user.is_admin?
       @writeups = $postsDB.exclude(ctf_name: nil).exclude(ctf_name: '').all.each { |post| post[:content] = prepare_post(post[:content]) }
@@ -73,7 +77,7 @@ class MyServer < Sinatra::Base
   end
 
   get '/post/:id' do
-    @js = ["post-js"]
+    @js = ["post-script"]
     @css = ["post-styles"]
     params_id = params[:id]
 
@@ -111,7 +115,7 @@ class MyServer < Sinatra::Base
   end
 
   get '/posts' do
-    @js = ["sanitizehtml-js"]
+    @js = ["sanitizehtml-script"]
     @css = ["posts-styles"]
 
     page = (params[:page] || 1).to_i
@@ -175,7 +179,7 @@ class MyServer < Sinatra::Base
 
   get '/edit-attachment/:id' do
     if current_user.is_admin?
-      @js = ["new-post-js"]
+      @js = ["new-post-script"]
       @error = " "
       @post = $postsDB.where(id: params[:id]).all.first
       @action_endpoint = "/edit-attachment"
@@ -209,7 +213,7 @@ class MyServer < Sinatra::Base
 
   get '/edit/:id' do
     if current_user.is_admin?
-      @js = ["new-post-js"]
+      @js = ["new-post-script"]
       @categories = []
       @error = " "
       @post = $postsDB.where(id: params[:id]).all.first
@@ -224,7 +228,7 @@ class MyServer < Sinatra::Base
 
   get '/tags' do
     @css = ["tags-styles"]
-    @js = ["tags-js"]
+    @js = ["tags-script"]
     @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post[:content]) }
     @tags = @posts.flat_map { |post| post[:tags].split(',') }.uniq
     erb :tags
@@ -254,7 +258,7 @@ class MyServer < Sinatra::Base
   get '/new-post' do
     if current_user.is_admin?
       @error = " "
-      @js = ["new-post-js"]
+      @js = ["new-post-script"]
       @categories = $postsDB.select(:category).distinct.map(:category)
       @css = ["new-post-styles"]
       return erb :new_post
@@ -304,7 +308,7 @@ class MyServer < Sinatra::Base
   get '/posts-cms' do
     if current_user.is_admin?
       @css = ["cms-styles"]
-      @js = ["cms-js"]
+      @js = ["cms-script"]
       return erb :cms, locals: { posts: $postsDB }
     end
 
@@ -314,7 +318,7 @@ class MyServer < Sinatra::Base
   get '/files-cms' do
     if current_user.is_admin?
       @css = ["cms-styles"]
-      @js = ["files-cms-js"]
+      @js = ["files-cms-script"]
       @directory_tree = generate_tree(File.join(settings.public_folder, 'writeups'))
       return erb :files_cms
     end
@@ -374,7 +378,7 @@ class MyServer < Sinatra::Base
 
   get '/delete/:id' do
     @css = ["cms-styles"]
-    @js = ["cms-js"]
+    @js = ["cms-script"]
     if current_user.is_admin?
       post_to_delete = $postsDB.select(:id).where(:id => params[:id]).first
       unless post_to_delete.nil?
@@ -395,7 +399,7 @@ class MyServer < Sinatra::Base
   get '/new-writeup' do
     @error=""
     @css = ["new-writeup-styles"]
-    @js = ["new-writeup-js"]
+    @js = ["new-writeup-script"]
     if current_user.is_admin?
       return erb :new_writeup
     end
@@ -405,7 +409,7 @@ class MyServer < Sinatra::Base
 
   post '/new-writeup/:stage' do
     @css = ["new-post-styles", "new-writeup-styles"]
-    @js = ["new-writeup-js"]
+    @js = ["new-writeup-script"]
     unless current_user.is_admin?
       redirect '/error'
     end
@@ -424,7 +428,7 @@ class MyServer < Sinatra::Base
       save_files(files: params[:files], base_path: $creator.get_publish_path)
     when 3
       #upload images
-      @js = ["new-writeup-images-js", "new-writeup-js"]
+      @js = ["new-writeup-images-script", "new-writeup-script"]
       save_files(files: params[:files], base_path: $creator.get_solve_path, sub_directory: 'images')
     when 4
       #add everything to db and save in readme.md
@@ -463,7 +467,7 @@ class MyServer < Sinatra::Base
 
   get '/files' do
     @css = ["files-styles"]
-    @js = ["files-js"]
+    @js = ["files-script"]
     unless current_user.is_admin?
       redirect '/errror'
     end
@@ -594,9 +598,7 @@ class MyServer < Sinatra::Base
 
 
   post '/rmdir/*' do
-    unless current_user.is_admin?
-      return { error: "403 Forbidden" }.to_json
-    end
+    return { error: "403 Forbidden" }.to_json unless current_user.is_admin?
 
     dir_path = params[:splat].first
     full_dir_path = File.join(settings.public_folder, dir_path)
@@ -606,9 +608,7 @@ class MyServer < Sinatra::Base
   post '/mkdir' do
     content_type :json
 
-    unless current_user.is_admin?
-      return { error: "403 Forbidden" }.to_json
-    end
+    return { error: "403 Forbidden" }.to_json unless current_user.is_admin?
 
     data = JSON.parse(request.body.read)
     data_path = data["path"].gsub('/files','')

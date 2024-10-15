@@ -1,9 +1,9 @@
-<h1>>/Login $</h1>
+<h1>/>Login $</h1>
 <% if session[:allowed] != 1 %>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Gruppo&display=swap" rel="stylesheet">
-  <h2>What are you looking for?</h2>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gruppo&display=swap" rel="stylesheet">
+<h2>What are you looking for?</h2>
 <% else %>
 <hr>
 <div class="login-form">
@@ -14,7 +14,7 @@
       <div class="icon-div">
         <i class="fa-solid fa-user" id="textbox-icon"></i>
       </div>
-      <input type="text" name="username" autocomplete="off placeholder="Username">
+      <input type="text" name="username" autocomplete="off" placeholder="Username">
     </div>
     <div class="textbox">
       <div class="icon-div">
@@ -25,32 +25,33 @@
     <input type="submit" value="Login">
   </form>
 </div>
+  <script>
+      window.addEventListener("load", function(evt){
+          var canvas = document.getElementById('canv');
+          var ctx = canvas.getContext('2d');
 
-<script>
-    var canvas = document.getElementById('canv');
-    var ctx = canvas.getContext('2d');
+          var w = canvas.width = 300;
+          var h = canvas.height = 300;
 
-    var w = canvas.width = 300;
-    var h = canvas.height = 300;
-    var cols = Math.floor(w / 20) + 1;
-    var ypos = Array(cols).fill(0);
+          var cols = Math.floor(w / 20) + 1;
+          var ypos = Array(cols).fill(0);
 
-    function matrix() {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.fillRect(0, 0, w, h);
+          function matrix() {
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+              ctx.fillRect(0, 0, w, h);
 
-        ctx.fillStyle = '#afafaf';
-        ctx.font = '15pt monospace';
+              ctx.fillStyle = '#afafaf';
+              ctx.font = '15pt monospace';
 
-        ypos.forEach((y, ind) => {
-            const text = String.fromCharCode(33 + Math.random() * 94);
-            const x = ind * 20;
-            ctx.fillText(text, x, y);
-            if (y > h + Math.random() * 10000) ypos[ind] = 0;
-            else ypos[ind] = y + 20;
-        });
-    }
-
-    setInterval(matrix, 50);
-</script>
+              ypos.forEach((y, ind) => {
+                  const text = String.fromCharCode(33 + Math.random() * 94);
+                  const x = ind * 20;
+                  ctx.fillText(text, x, y);
+                  if (y > h + Math.random() * 10000) ypos[ind] = 0;
+                  else ypos[ind] = y + 20;
+              });
+          }
+          setInterval(matrix, 50);
+      });
+  </script>
 <% end %>

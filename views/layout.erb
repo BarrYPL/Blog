@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
-    <script src="/js/general-js.js"></script>
+    <script src="/js/general-script.js"></script>
     <% if @css %>
       <% @css.each do |style| %>
         <%= "<link rel=\"stylesheet\" href=\"/css/#{style}.css\">" %>
@@ -53,6 +53,9 @@
         <button class="hamburger-menu" onclick="toggleMenu()">☰</button>
       </header>
     </div>
+    <% if @title %>
+      <%= erb :title_partial, locals: { title: @title } %>
+    <% end %>
     <div id="alert-container" class="alert-container"></div>
     <div class="container">
       <% if @error %>

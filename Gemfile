@@ -17,3 +17,4 @@ gem 'readingtime'
 gem 'sinatra-contrib', require: ['sinatra/reloader']
 gem 'sqlite3'
 gem "rackup", "~> 2.1"
+gem 'dotenv'

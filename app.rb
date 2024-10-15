@@ -1,10 +1,5 @@
 require_relative('modules/imports')
 
-DB = Sequel.sqlite 'db/database.db'
-$usersDB = DB[:users]
-$postsDB = DB[:posts]
-$filesDB = DB[:files]
-
 class HTMLWithPygments < Redcarpet::Render::HTML
   include Rouge::Plugins::Redcarpet
 end
@@ -23,15 +18,38 @@ class MyServer < Sinatra::Base
   enable :inline_templates
 
   configure do
-    set :run            , 'true'
-    set :public_folder  , 'public'
-    set :views          , 'views'
-    set :port           , '80'
-    set :bind           , '::' #Forgot about IPv6
-    set :show_exceptions, 'true' #Those are errors
+    if ENV['RACK_ENV'].nil?
+      raise "The environment variable RACK_ENV is not set! Please set it before starting the application."
+    else
+      puts "You are starting the application in the #{ENV['RACK_ENV']} environment."
+    end
+
+    set :run           , true
+    set :public_folder , 'public'
+    set :views         , 'views'
+    set :port          , 80
+    set :bind          , '::' # IPv6 bind
   end
 
-  set :markdown, Redcarpet::Markdown.new(HTMLWithPygments.new, fenced_code_blocks: true, :smartypants => true)
+  configure :development do
+    set :show_exceptions, true
+    set :logging, true
+    set :DB, Sequel.sqlite('db/test_database.db')
+  end
+
+  configure :production do
+    set :show_exceptions, false
+    set :logging, false
+    set :DB, Sequel.sqlite('db/database.db')
+  end
+
+  before do
+    $usersDB = settings.DB[:users]
+    $postsDB = settings.DB[:posts]
+    $filesDB = settings.DB[:files]
+  end
+
+  set :markdown, Redcarpet::Markdown.new(HTMLWithPygments.new, fenced_code_blocks: true, smartypants: true)
 
   get '/' do
     @title = '>/Home $'
@@ -50,15 +68,18 @@ class MyServer < Sinatra::Base
     @js = ["sanitizehtml-script"]
     @css = ["categories-styles"]
     @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post[:content]) }
-    @categories = @posts.flat_map { |post| post[:category].split(',').map(&:capitalize) }.uniq
+    @categories = @posts.flat_map { |post| post[:category].split(',').map(&:capitalize) }
+                        .uniq
+                        .select { |category| @posts.any? { |post| post[:category].split(',').include?(category) } }
     @categories.sort_by! { |category| category.downcase == 'intro' ? '' : category.downcase }
     erb :categories
   end
 
+
   get '/categories/:category' do
     @css = ["categories-styles"]
     category_param = params[:category]
-    @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = prepare_post(post[:content]) }
+    @posts = $postsDB.where(is_public: 1).all.each { |post| post[:content] = post[:content] }
     @categories = [category_param]
     @posts = @posts.select { |post| post[:category].split(',').map(&:downcase).include?(category_param.downcase) }
     erb :category
@@ -122,7 +143,7 @@ class MyServer < Sinatra::Base
     per_page = 6
     offset = (page - 1) * per_page
 
-    @posts = DB[:posts]
+    @posts = $postsDB
                .where(:is_public => 1)
                .order(Sequel.desc(:date))
                .limit(per_page)
@@ -130,7 +151,7 @@ class MyServer < Sinatra::Base
                .all
                .each { |post| post[:content] = post[:content] }
 
-    @total_posts = DB[:posts].where(:is_public => 1).count
+    @total_posts = $postsDB.where(:is_public => 1).count
     @total_pages = (@total_posts / per_page.to_f).ceil
     @current_page = page
 

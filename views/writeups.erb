@@ -11,7 +11,7 @@
               <a href="/post/<%= writeup[:id] %>"><h3><%= writeup[:title].titleize %></h3></a>
             </div>
             <div class="writeup-content">
-              <p><%= writeup[:content].remove_some_html_tags.trimm_to_preview %></p>
+              <p><%= writeup[:content].remove_all_html_tags.trimm_to_preview %></p>
             </div>
           </div>
           <div class="writeup-date">

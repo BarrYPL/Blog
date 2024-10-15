@@ -52,4 +52,8 @@ class String
   def remove_some_html_tags
     self.gsub(/<\/?(code|pre|img)[^>]*>/, '')
   end
+
+  def remove_alL_html_tags
+    self.gsub(/<[^>]+>/, '')
+  end
 end

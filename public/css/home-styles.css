@@ -1,15 +1,19 @@
+.posts-list{
+  columns: 250px;
+}
+
 .post{
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 5;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 250px;
 }
 
-.post-elem {
-  display: flex;
-  margin-bottom: 20px;
-  justify-content: space-between;
+.post-card {
+  width: fit-content;
+  padding: 15px 0px;
 }
 
 .post-date p {

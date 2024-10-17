@@ -186,14 +186,15 @@ li a:hover::after{
 }
 
 .logo-coursor {
-  height: 1rem;
+  height: 1em;
   width: 10px;
   background: #c70606;
-  display: block;
   box-sizing: inherit;
   border-radius: 1px;
   margin-left: 5px;
   animation: cursor 1s infinite;
+  display: inline-block;
+  position: relative;
 }
 
 .title-header-div {

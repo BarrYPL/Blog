@@ -1,12 +1,19 @@
 <hr>
-<p id="welcome-paragraph"></p>
+<div class="terminal">
+  <div class="terminal-header">
+    <span class="red-dot"></span>
+    <span class="yellow-dot"></span>
+    <span class="green-dot"></span>
+  </div>
+  <p id="welcome-paragraph"><span class="logo-coursor"></span></p>
+</div>
 <hr>
 <div class="recent-posts">
 <h2>Recent posts</h2>
   <div class="posts-list">
     <% $postsDB.where(is_public: 1).order(Sequel.desc(:date)).limit(3).all.each do |post| %>
       <div class="post-card">
-        <a href="/post/<%= post[:id] %>"><img src="https://picsum.photos/220/120" alt=""></a>
+        <a href="/post/<%= post[:id] %>"><img src="https://picsum.photos/220/120" alt="" class="post-tumbnail"></a>
           <div class="post">
             <div class="post-date">
               <p><%= post[:date].strftime("%-d.%m.%Y") %>r</p>

@@ -53,6 +53,7 @@ class MyServer < Sinatra::Base
 
   get '/' do
     @title = '>/Home $'
+    @js = ["home-script"]
     @css = ["home-styles"]
     erb :home
   end

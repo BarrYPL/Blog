@@ -1,5 +1,8 @@
 .posts-list{
-  columns: 250px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
 }
 
 .post{
@@ -8,16 +11,18 @@
   -webkit-line-clamp: 5;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 250px;
+  max-width: 230px;
 }
 
 .post-card {
   width: fit-content;
-  padding: 15px 0px;
+  padding: 15px;
+  margin: 0px 20px 20px 0px;
+  background: #ebebeb;
 }
 
 .post-date p {
-  width: 90px;
+  width: 100%;
   color: #888;
 }
 
@@ -47,4 +52,15 @@
 .see-more a{
   display: block;
   width: max-content;
+}
+
+@media (max-width: 600px) {
+  .posts-list {
+    justify-content: center;
+  }
+}
+
+#welcome-paragraph{
+  width: 100%;
+  text-align: left;
 }

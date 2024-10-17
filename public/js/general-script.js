@@ -123,8 +123,10 @@ window.addEventListener("load", function(evt){
     }
 
     document.querySelectorAll('img').forEach(function(image) {
-        image.addEventListener('click', function() {
-            showImageInOverlay(image.src);
-        });
+        if (image.parentElement.tagName.toLowerCase() !== 'a') {
+            image.addEventListener('click', function() {
+                showImageInOverlay(image.src);
+            });
+        }
     });
 })

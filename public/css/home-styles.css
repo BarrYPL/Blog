@@ -110,6 +110,10 @@ p .logo-coursor {
   min-height: 320px;
   display: flex;
   flex-direction: column-reverse;
+  background-image: url('/images/wallpaper.png');
+  background-size: 100% 90%;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .menu-bar {

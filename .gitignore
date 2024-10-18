@@ -6,3 +6,6 @@ db/*
 
 # Ignore entire public/writeups directory
 public/writeups/
+
+# Ignore thumbnails
+public/images/thumbnails

@@ -42,7 +42,7 @@
               <li><a href="/posts">Posts</a></li>
               <li><a href="/ctfs">CTFs</a></li>
               <% if !current_user %>
-                <% if settings.environment == "production" %>
+                <% if settings.environment == :development %>
                   <li>
                     <form action="/autologin" method="post">
                       <a><button type="submit" class="autologin-btn">Autologin</button></a>

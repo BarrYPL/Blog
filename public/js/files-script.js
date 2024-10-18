@@ -436,6 +436,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fetchFiles();
 
+  const fileInput = document.getElementById('file-input');
+  const uploadTrigger = document.getElementById('upload-trigger');
+
+  dropZone.addEventListener('click', () => fileInput.click());
+  uploadTrigger.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', (e) => {
+    const files = e.target.files;
+    handleFiles(files);
+  });
+
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropZone.addEventListener(eventName, preventDefaults, false);
   });

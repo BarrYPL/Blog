@@ -1,0 +1,51 @@
+.images-container {
+    width: 100%;
+}
+
+.images-container h2{
+    margin-bottom: 10px;
+}
+
+.image-gallery {
+    columns: 300px;
+}
+
+.image-form {
+    display: flex;
+    width: 100%;
+    flex-direction: row-reverse;
+}
+
+.image-item {
+    max-width: 260px;
+    height: auto;
+    overflow: hidden;
+}
+
+.image-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.post-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.current-thumbnail {
+    width: 180px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.current-thumbnail.placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ccc;
+    color: #f1f1f1;
+    width: 180px;
+    height: 100px;
+}

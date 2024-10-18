@@ -13,9 +13,11 @@ require 'fileutils'
 require 'zip'
 require 'mime/types'
 require 'readingtime'
+require 'dotenv'
 require 'sinatra/reloader' if development?
 require_relative './PostFromFiles.rb'
 require_relative './GitWriteupCreator.rb'
+Dotenv.load
 
 class NilClass
   def is_admin?

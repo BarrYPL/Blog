@@ -16,7 +16,7 @@
   padding: 0px 10px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 8;
+  -webkit-line-clamp: 5;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 600px;

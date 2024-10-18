@@ -1,3 +1,4 @@
 @echo off
+set RACK_ENV=development
 taskkill /F /IM "ruby.exe" /T
-start app.rb
+start ruby app.rb

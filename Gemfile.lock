@@ -5,6 +5,7 @@ GEM
     bcrypt (3.1.20)
     bigdecimal (3.1.8)
     cgi (0.4.1)
+    dotenv (3.1.4)
     erb (4.0.4)
       cgi (>= 0.3.3)
     fileutils (1.7.2)
@@ -59,6 +60,7 @@ PLATFORMS
 DEPENDENCIES
   bcrypt
   cgi
+  dotenv
   erb
   fileutils
   json

@@ -1,4 +1,4 @@
-<h1>/Posts/[<%= @current_page * 6 - 5 %>:<%= [@current_page * 6, @total_posts].min %>]/<%= @total_posts %> $</h1>
+<h1>>/Posts/[<%= @current_page * 6 - 5 %>:<%= [@current_page * 6, @total_posts].min %>]/<%= @total_posts %> $</h1>
 <div class="sort-buttons">
   <h3>Sort by:</h3>
   <a href="/categories" class="main-button">Categories</a>
@@ -11,6 +11,13 @@
     <div class="posts">
       <% @posts.select { |post| post[:date].year == year }.each do |post| %>
         <div class="post-elem">
+          <a href="/post/<%= post[:id] %>">
+            <% unless post[:thumbnail].nil? %>
+              <img src="./images/thumbnails/<%= post[:thumbnail] %>" alt="" class="post-tumbnail">
+            <% else %>
+              <div class="post-thumbnail placeholder"><i class="fa-solid fa-panorama fa-5x"></i></div>
+            <% end %>
+          </a>
           <div class="post">
             <div class="post-title">
               <a href="/post/<%= post[:id] %>"><h3><%= post[:title].titleize %></h3></a>

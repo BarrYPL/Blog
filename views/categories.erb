@@ -1,8 +1,3 @@
-<h1>>/Categories $</h1>
-<div class="buttons">
-  <a href="#" onclick="history.back()" class="main-button">cd ..</a>
-</div>
-<hr>
 <% @categories.each do |category| %>
   <div class="category-post-group">
     <div class="category">
@@ -14,7 +9,7 @@
                .reverse
                .take(2)
                .each do |post| %>
-    <div class="post-elem">
+        <div class="post-elem">
           <div class="post">
             <div class="post-title">
               <a href="/post/<%= post[:id] %>"><h2><%= post[:title].titleize %></h2></a>

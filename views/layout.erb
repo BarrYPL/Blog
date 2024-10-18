@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
-    <script src="/js/general-js.js"></script>
+    <script src="/js/general-script.js"></script>
     <% if @css %>
       <% @css.each do |style| %>
         <%= "<link rel=\"stylesheet\" href=\"/css/#{style}.css\">" %>
@@ -41,7 +41,13 @@
               <li><a href="/about">Whoami</a></li>
               <li><a href="/posts">Posts</a></li>
               <li><a href="/ctfs">CTFs</a></li>
-              <% if current_user %>
+              <% if !current_user %>
+              <li>
+                <form action="/autologin" method="post">
+                  <a><button type="submit" class="autologin-btn">Autologin</button></a>
+                </form>
+              </li>
+              <% else %>
                 <% if current_user[:isAdmin] %>
                   <li><a href="/admin">Admin Panel</a></li>
                 <% end %>
@@ -53,6 +59,9 @@
         <button class="hamburger-menu" onclick="toggleMenu()">☰</button>
       </header>
     </div>
+    <% if @title %>
+      <%= erb :title_partial, locals: { title: @title } %>
+    <% end %>
     <div id="alert-container" class="alert-container"></div>
     <div class="container">
       <% if @error %>

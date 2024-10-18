@@ -13,9 +13,6 @@
 
 .post{
   padding: 0px 10px;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 600px;
@@ -32,7 +29,15 @@
   color: #888;
 }
 
+.post-content {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+}
+
 .sort-buttons {
+  margin-top: 10px;
   display: flex;
   align-items: center;
   width: 100%;

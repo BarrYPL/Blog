@@ -5,7 +5,7 @@
     <h3 id="current-path"></h3>
     <div id="options-div"></div>
   </div>
-  <div class="table-holder">    
+  <div class="table-holder">
     <table id="file-table" class="file-table">
       <thead>
         <tr>
@@ -18,7 +18,10 @@
       <tbody></tbody>
     </table>
   </div>
-  <div id="drop-zone"><i class="fa-solid fa-file-import"></i> Drop files here</div>
+  <div id="drop-zone">
+    <i class="fa-solid fa-file-import"></i> Drop files here or <span id="upload-trigger">click to upload</span>
+  </div>
+  <input type="file" id="file-input" multiple style="display:none;" />
   <div id="custom-menu">
     <ul>
       <li id="unzip"><i class="fa-solid fa-arrow-up-from-bracket"></i> Unzip File</li>

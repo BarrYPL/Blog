@@ -55,10 +55,35 @@
 }
 
 .terminal {
-  width: 100%;
+  position: absolute;
+  top: 0px;
+  left: 50px;
+  width: 300px;
+  height: 260px;
   background: #ebebeb;
   border-radius: 10px 10px 0px 0px;
-  height: 280px;
+  overflow: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+  -ms-overflow-style: scrollbar;
+  -webkit-overflow-scrolling: touch;
+  z-index: 9;
+}
+
+.terminal::-webkit-scrollbar {
+  width: 10px;
+}
+
+.terminal::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.terminal::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.terminal::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .terminal-header {
@@ -66,6 +91,9 @@
   padding: 10px;
   display: flex;
   border-radius: 10px 10px 0px 0px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .terminal-header span{
@@ -92,7 +120,6 @@
 }
 
 .prompt {
-  /* color: #c70606; */
   font-weight: bold;
 }
 
@@ -103,23 +130,28 @@ p .logo-coursor {
 
 #welcome-paragraph{
   padding: 5px 10px 10px 10px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .desktop {
+  position: relative;
   width: 100%;
   min-height: 320px;
-  display: flex;
-  flex-direction: column-reverse;
   background-image: url('/images/wallpaper.png');
   background-size: 100% 90%;
   background-position: center;
   background-repeat: no-repeat;
+  overflow: hidden;
 }
 
 .menu-bar {
+  position: absolute;
+  bottom: 0;
   width: 100%;
   background: #afafaf;
   padding: 5px 10px;
+  z-index: 10;
 }
 
 .app-icon {

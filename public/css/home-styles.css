@@ -1,7 +1,7 @@
 .posts-list{
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-evenly;
   flex-wrap: wrap;
 }
 
@@ -24,10 +24,6 @@
 .post-date p {
   width: 100%;
   color: #888;
-}
-
-.post-tumbnail {
-  width: 100%;
 }
 
 .sort-buttons {
@@ -82,14 +78,17 @@
 
 .red-dot {
   background: #FF605C;
+  cursor: pointer;
 }
 
 .yellow-dot {
   background: #FFBD44;
+  cursor: pointer;
 }
 
 .green-dot {
   background: #00CA4E;
+  cursor: pointer;
 }
 
 .prompt {
@@ -104,6 +103,34 @@ p .logo-coursor {
 
 #welcome-paragraph{
   padding: 5px 10px 10px 10px;
+}
+
+.desktop {
+  width: 100%;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.menu-bar {
+  width: 100%;
+  background: #afafaf;
+  padding: 5px 10px;
+}
+
+.app-icon {
+  height: 30px;
+  width: 30px;
+  padding: 5px;
+  background: #121212;
+  color: #f1f1f1;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.app-icon:hover {
+  box-shadow: 0px -1px 8px 4px rgba(255,0,0,0.3);
+  transform: scale(1.05);
+  cursor: pointer;
 }
 
 @media (max-width: 600px) {

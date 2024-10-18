@@ -1,6 +1,7 @@
 table {
   text-align: center;
   width: 100%;
+  table-layout: fixed;
 }
 
 th {
@@ -17,9 +18,10 @@ td {
   padding: 10px 5px;
   overflow: hidden;
   height: 25px;
-  white-space: nowrap;
+  white-space: normal;
   text-overflow: ellipsis;
   max-width: 150px;
+  word-wrap: break-word;
 }
 
 td button {
@@ -67,8 +69,4 @@ a.file {
   background: #07ef0787;
   padding: 1px;
   border-radius: 10px;
-}
-
-#post-text{
-  display: block;
 }

@@ -1,0 +1,28 @@
+<h1>Select image for "<%= @post[:title] %>"</h1>
+<div class="post-image">
+  <h2>Current image:</h2>
+  <% unless @post[:thumbnail].nil? %>
+    <img src="/images/thumbnails/<%= @post[:thumbnail] %>" alt="" class="current-tumbnail">
+  <% else %>
+    <div class="current-thumbnail placeholder"><i class="fa-solid fa-panorama fa-5x"></i></div>
+  <% end %>
+</div>
+<form class="image-form" action="/attach-image/<%= @post[:id] %>" method="post">
+  <input type="hidden" name="image-name" value="<%= @post[:thumbnail] %>">
+  <button type="submit" class="main-button">Save</button>
+</form>
+<hr>
+<div class="images-container">
+  <h2>Gallery:</h2>
+  <div class="image-gallery">
+    <% if @images.any? %>
+      <% @images.each do |image| %>
+        <div class="image-item">
+          <img src="<%= image.gsub('./public', '') %>" alt="Thumbnail" class="thumbnail-image" id="<%= @post[:thumbnail] %>">
+        </div>
+      <% end %>
+    <% else %>
+      <p>No images found in the directory.</p>
+    <% end %>
+  </div>
+</div>

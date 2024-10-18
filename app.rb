@@ -21,7 +21,9 @@ class MyServer < Sinatra::Base
     if ENV['RACK_ENV'].nil?
       raise "The environment variable RACK_ENV is not set! Please set it before starting the application."
     else
-      puts "You are starting the application in the #{ENV['RACK_ENV']} environment."
+      puts "========================================================================"
+      puts "==  You are starting the application in the #{ENV['RACK_ENV']} environment.  =="
+      puts "========================================================================"
     end
 
     set :run           , true
@@ -215,7 +217,7 @@ class MyServer < Sinatra::Base
 
   post '/edit-attachment' do
     $postsDB.where(id: params[:id]).update(attachment: params[:content])
-    redirect "/post/#{find_post_title_by_id(params[:id])}"
+    redirect "/post/#{ERB::Util.url_encode(find_post_title_by_id(params[:id]))}"
   end
 
   get '/showfile/*' do
@@ -702,6 +704,33 @@ class MyServer < Sinatra::Base
     end
   end
 
+  get '/attach-image/:id' do
+    if current_user.is_admin?
+      @css = ["attach-image-styles"]
+      @js = ["attach-image-script"]
+      @post = $postsDB.where(id: params[:id]).all.first
+      thumbnails_path = './public/images/thumbnails'
+      @images = Dir.glob("#{thumbnails_path}/*.{jpg,jpeg,png,gif}")
+      erb :attach_image
+    else
+      redirect '/error'
+    end
+  end
+
+  post '/attach-image/:id' do
+    $postsDB.where(id: params[:id]).update(thumbnail: params["image-name"])
+    redirect "/post/#{ERB::Util.url_encode(find_post_title_by_id(params[:id]))}"
+  end
+
+  post '/autologin' do
+    if current_environment == 'development'
+      session[:user_id] = 1
+      redirect '/'
+    else
+      halt 403, "Unauthorized"
+    end
+  end
+
 #Spellcheck kinda works for now
   post '/spellcheck' do
     request_payload = JSON.parse(request.body.read)
@@ -881,6 +910,10 @@ class MyServer < Sinatra::Base
      else
        nil
      end
+   end
+
+   def current_environment
+     settings.environment.to_s
    end
  end
 

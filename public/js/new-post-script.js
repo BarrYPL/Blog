@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
   //Category name
   const categoryInput = _('catg');
   const categoryParam = document.querySelector('input[name="category"]');
-  if (categoryParam) {
+  if (categoryParam && categoryInput) {
     if (categoryInput.value !== '') {
       categoryParam.value = categoryInput.value;
     }

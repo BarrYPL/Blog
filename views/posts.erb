@@ -11,6 +11,13 @@
     <div class="posts">
       <% @posts.select { |post| post[:date].year == year }.each do |post| %>
         <div class="post-elem">
+          <a href="/post/<%= post[:id] %>">
+            <% unless post[:thumbnail].nil? %>
+              <img src="./images/thumbnails/<%= post[:thumbnail] %>" alt="" class="post-tumbnail">
+            <% else %>
+              <div class="post-thumbnail placeholder"><i class="fa-solid fa-panorama fa-5x"></i></div>
+            <% end %>
+          </a>
           <div class="post">
             <div class="post-title">
               <a href="/post/<%= post[:id] %>"><h3><%= post[:title].titleize %></h3></a>

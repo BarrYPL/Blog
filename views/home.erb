@@ -1,11 +1,16 @@
-<hr>
-<div class="terminal">
-  <div class="terminal-header">
-    <span class="red-dot"></span>
-    <span class="yellow-dot"></span>
-    <span class="green-dot"></span>
+<hr id="above-desktop">
+<div class="desktop" id="desktop">
+  <div class="menu-bar">
+    <div class="app-icon" id="terminal-icon"><i class="fa-solid fa-terminal"></i></div>
   </div>
-  <p id="welcome-paragraph"><span class="logo-coursor"></span></p>
+  <div class="terminal">
+    <div class="terminal-header">
+      <span class="red-dot" id="exit"></span>
+      <span class="yellow-dot" id="minimize"></span>
+      <span class="green-dot"></span>
+    </div>
+    <p id="welcome-paragraph"><span class="logo-coursor"></span></p>
+  </div>
 </div>
 <hr>
 <div class="recent-posts">
@@ -13,7 +18,13 @@
   <div class="posts-list">
     <% $postsDB.where(is_public: 1).order(Sequel.desc(:date)).limit(3).all.each do |post| %>
       <div class="post-card">
-        <a href="/post/<%= post[:id] %>"><img src="https://picsum.photos/220/120" alt="" class="post-tumbnail"></a>
+        <a href="/post/<%= post[:id] %>">
+          <% unless post[:thumbnail].nil? %>
+            <img src="./images/thumbnails/<%= post[:thumbnail] %>" alt="" class="post-tumbnail">
+          <% else %>
+            <div class="post-thumbnail placeholder"><i class="fa-solid fa-panorama fa-5x"></i></div>
+          <% end %>
+        </a>
           <div class="post">
             <div class="post-date">
               <p><%= post[:date].strftime("%-d.%m.%Y") %>r</p>

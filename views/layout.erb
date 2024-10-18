@@ -41,7 +41,13 @@
               <li><a href="/about">Whoami</a></li>
               <li><a href="/posts">Posts</a></li>
               <li><a href="/ctfs">CTFs</a></li>
-              <% if current_user %>
+              <% if !current_user %>
+              <li>
+                <form action="/autologin" method="post">
+                  <a><button type="submit" class="autologin-btn">Autologin</button></a>
+                </form>
+              </li>
+              <% else %>
                 <% if current_user[:isAdmin] %>
                   <li><a href="/admin">Admin Panel</a></li>
                 <% end %>

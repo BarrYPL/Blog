@@ -32,11 +32,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 260px;
+    height: 145px;
+    overflow: hidden;
 }
 
 .current-thumbnail {
-    width: 180px;
-    height: 100px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
@@ -46,6 +49,6 @@
     align-items: center;
     background-color: #ccc;
     color: #f1f1f1;
-    width: 180px;
-    height: 100px;
+    width: 100%;
+    height: auto;
 }

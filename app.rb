@@ -224,16 +224,25 @@ class MyServer < Sinatra::Base
     unless current_user.is_admin?
       redirect '/error'
     end
+
     @css = ["post-styles"]
     @file_name = params[:splat].first
     @file_path = File.join(settings.public_folder, @file_name)
+
     if is_text_file?(@file_path)
       @content = prepare_post(File.read(@file_path))
+      @is_image = false
+    elsif is_image_file?(@file_path)
+      @content = "<img src='/#{@file_name}' alt='Image file' style='max-width: 100%; height: auto;'>"
+      @is_image = true
     else
-      @content = "File is not a text file."
+      @content = "Unsupported file format."
+      @is_image = false
     end
+
     erb :show_file
   end
+
 
   get '/edit/:id' do
     if current_user.is_admin?
@@ -717,17 +726,34 @@ class MyServer < Sinatra::Base
     end
   end
 
+  require 'securerandom'
+
   post '/attach-image/:id' do
     if current_user.is_admin?
       image_name = params["image-name"]
       file_format = File.extname(image_name)
+      old_file_path = File.join("public", "images", "thumbnails", image_name)
       new_image_name = "#{params[:id]}#{file_format}"
-      $postsDB.where(id: params[:id]).update(thumbnail: new_image_name)
-      redirect "/post/#{ERB::Util.url_encode(find_post_title_by_id(params[:id]))}"
+      new_file_path = File.join("public", "images", "thumbnails", new_image_name)
+
+      if File.exist?(new_file_path)
+        random_string = SecureRandom.hex(4)
+        random_file_name = "#{random_string}#{file_format}"
+        random_file_path = File.join("public", "images", "thumbnails", random_file_name)
+        File.rename(new_file_path, random_file_path)
+      end
+      if File.exist?(old_file_path)
+        File.rename(old_file_path, new_file_path)
+        $postsDB.where(id: params[:id]).update(thumbnail: new_image_name)
+        redirect "/post/#{ERB::Util.url_encode(find_post_title_by_id(params[:id]))}"
+      else
+        redirect '/error'
+      end
     else
       redirect '/error'
     end
   end
+
 
   post '/autologin' do
     if current_environment == 'development'
@@ -790,6 +816,11 @@ class MyServer < Sinatra::Base
       return check_is_file_published(file_path)
     end
   end
+
+  def is_image_file?(file_path)
+    %w(.jpg .jpeg .png .gif .bmp .svg).include?(File.extname(file_path).downcase)
+  end
+
 
   def login_failed
    session.clear

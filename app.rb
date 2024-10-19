@@ -718,8 +718,15 @@ class MyServer < Sinatra::Base
   end
 
   post '/attach-image/:id' do
-    $postsDB.where(id: params[:id]).update(thumbnail: params["image-name"])
-    redirect "/post/#{ERB::Util.url_encode(find_post_title_by_id(params[:id]))}"
+    if current_user.is_admin?
+      image_name = params["image-name"]
+      file_format = File.extname(image_name)
+      new_image_name = "#{params[:id]}#{file_format}"
+      $postsDB.where(id: params[:id]).update(thumbnail: new_image_name)
+      redirect "/post/#{ERB::Util.url_encode(find_post_title_by_id(params[:id]))}"
+    else
+      redirect '/error'
+    end
   end
 
   post '/autologin' do

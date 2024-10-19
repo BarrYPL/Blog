@@ -178,18 +178,39 @@ window.addEventListener("load", function(evt) {
     //green-dot code
     const greenDot = document.querySelector('.green-dot');
     if (greenDot) {
+        let isMaximized = false;
+        let previousStyles = {};
+
         greenDot.addEventListener("click", function (e) {
             const terminal = document.querySelector('.terminal');
             const desktop = document.querySelector('#desktop');
             const menuBarHeight = 40;
 
             if (terminal && desktop) {
-                const maxWidth = desktop.offsetWidth;
-                const maxHeight = desktop.offsetHeight - menuBarHeight;
-                terminal.style.width = `${maxWidth}px`;
-                terminal.style.height = `${maxHeight}px`;
-                terminal.style.left = `0px`;
-                terminal.style.top = `0px`;
+                if (!isMaximized) {
+                    previousStyles = {
+                        width: terminal.style.width,
+                        height: terminal.style.height,
+                        left: terminal.style.left,
+                        top: terminal.style.top
+                    };
+
+                    const maxWidth = desktop.offsetWidth;
+                    const maxHeight = desktop.offsetHeight - menuBarHeight;
+                    terminal.style.width = `${maxWidth}px`;
+                    terminal.style.height = `${maxHeight}px`;
+                    terminal.style.left = `0px`;
+                    terminal.style.top = `0px`;
+
+                    isMaximized = true;
+                } else {
+                    terminal.style.width = previousStyles.width;
+                    terminal.style.height = previousStyles.height;
+                    terminal.style.left = previousStyles.left;
+                    terminal.style.top = previousStyles.top;
+
+                    isMaximized = false;
+                }
             } else {
                 console.error("Elementy 'terminal' lub 'desktop' nie zostały znalezione.");
             }

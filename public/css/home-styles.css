@@ -135,6 +135,7 @@ p .logo-coursor {
 }
 
 .desktop {
+  border: 2px solid #afafaf;
   position: relative;
   width: 100%;
   min-height: 320px;

@@ -14,6 +14,11 @@
   <p><i class="fa-regular fa-clock"></i> Estimated reading time: <%= (@post[:content].to_s + @post[:publish_content].to_s).reading_time :format => :approx %></p>
 </div>
 <hr>
+<% if @post[:thumbnail] %>
+  <div class="post-thumbnail">
+    <img src="/images/thumbnails/<%= @post[:thumbnail] %>" alt="">
+  </div>
+<% end %>
 <div class="post-container">
   <% unless @post[:ctf_name].nil? %>
     <%= prepare_post(@post[:publish_content]) %>

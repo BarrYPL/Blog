@@ -18,13 +18,15 @@
   <div class="posts-list">
     <% $postsDB.where(is_public: 1).order(Sequel.desc(:date)).limit(3).all.each do |post| %>
       <div class="post-card">
-        <a href="/post/<%= post[:id] %>">
-          <% unless post[:thumbnail].nil? %>
+        <div class="anchor-holder">
+          <a href="/post/<%= post[:id] %>">
+            <% unless post[:thumbnail].nil? %>
             <img src="./images/thumbnails/<%= post[:thumbnail] %>" alt="" class="post-tumbnail">
-          <% else %>
+            <% else %>
             <div class="post-thumbnail placeholder"><i class="fa-solid fa-panorama fa-5x"></i></div>
-          <% end %>
-        </a>
+            <% end %>
+          </a>
+        </div>
           <div class="post">
             <div class="post-date">
               <p><%= post[:date].strftime("%-d.%m.%Y") %>r</p>

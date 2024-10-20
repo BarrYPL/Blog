@@ -11,23 +11,30 @@
     <div class="posts">
       <% @posts.select { |post| post[:date].year == year }.each do |post| %>
         <div class="post-elem">
-          <a href="/post/<%= post[:id] %>">
-            <% unless post[:thumbnail].nil? %>
-              <img src="./images/thumbnails/<%= post[:thumbnail] %>" alt="" class="post-tumbnail">
-            <% else %>
-              <div class="post-thumbnail placeholder"><i class="fa-solid fa-panorama fa-5x"></i></div>
-            <% end %>
-          </a>
-          <div class="post">
-            <div class="post-title">
-              <a href="/post/<%= post[:id] %>"><h3><%= post[:title].titleize %></h3></a>
-            </div>
-            <div class="post-content">
-              <p><%= post[:content].trimm_to_preview %></p>
-            </div>
+          <div class="anchor-holder">
+            <a href="/post/<%= post[:id] %>">
+              <% unless post[:thumbnail].nil? %>
+                <img src="./images/thumbnails/<%= post[:thumbnail] %>" alt="" class="post-tumbnail">
+              <% else %>
+                <div class="post-thumbnail placeholder"><i class="fa-solid fa-panorama fa-5x"></i></div>
+              <% end %>
+            </a>
           </div>
-          <div class="post-date">
-            <p><%= post[:date].strftime("%-d %b") %></p>
+          <div class="text-elements">
+            <div class="post">
+              <div class="post-title">
+                <a href="/post/<%= post[:id] %>"><h3><%= post[:title].titleize %></h3></a>
+              </div>
+              <div class="post-content">
+                <p><%= post[:content].trimm_to_preview %></p>
+              </div>
+              <div class="read-more-caption">
+                <a href="#"><p>Read more...</p></a>
+              </div>
+            </div>
+            <div class="post-date">
+              <p><%= post[:date].strftime("%-d %b") %></p>
+            </div>
           </div>
         </div>
       <% end %>

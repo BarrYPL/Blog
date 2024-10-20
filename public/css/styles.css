@@ -3,8 +3,6 @@
   padding: 0;
   text-decoration: none;
   box-sizing: border-box;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
 }
 
 html, body {
@@ -270,7 +268,7 @@ footer {
 }
 
 
-@media (max-width: 800px) {
+@media (max-width: 880px) {
     .menu-header{
       padding: 20px 20px;
     }
@@ -364,7 +362,7 @@ footer {
 }
 
 .post-tumbnail {
-    max-height: 100px;
+    max-height: 120px;
     width: auto;
     aspect-ratio: 16 / 9;
     object-fit: cover;
@@ -377,11 +375,17 @@ footer {
 .post-thumbnail.placeholder {
     min-width: 180px;
     width: 100%;
-    height: 100px;
+    height: 120px;
     color: #f1f1f1;
     background-color: #ccc;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
+}
+
+.anchor-holder {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }

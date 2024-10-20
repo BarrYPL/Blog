@@ -141,7 +141,6 @@ p .logo-coursor {
   min-height: 320px;
   background-image: url('/images/wallpaper.png');
   background-size: 100% 90%;
-  background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
 }

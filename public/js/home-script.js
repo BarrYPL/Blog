@@ -4,6 +4,13 @@ window.addEventListener("load", function(evt) {
     const desktop = document.querySelector('#desktop');
     let isDragging = false;
     let offsetX, offsetY;
+    let isTerminalVisible = true;
+    let isMaximized = false;
+    let previousStyles = {};
+    let inputLength = 1;
+
+    const terminalIcon = _('terminal-icon');
+    const contextMenu = _('context-menu');
 
     let prompt1 = '<span class="prompt">BarrY:/$</span> ';
     let prompt2 = '<span class="prompt">BarrY:/home$</span> ';
@@ -31,6 +38,82 @@ window.addEventListener("load", function(evt) {
       return `${day}.${month}.${year}`;
     }
 
+    function showContextMenu(event) {
+        event.preventDefault();
+        const mouseX = event.pageX;
+        const mouseY = event.pageY;
+        contextMenu.style.top = `${mouseY}px`;
+        contextMenu.style.left = `${mouseX}px`;
+        contextMenu.style.display = 'block';
+    }
+
+    function hideContextMenu() {
+        contextMenu.style.display = 'none';
+    }
+
+    function toggleTerminalVisibility() {
+        if (isTerminalVisible) {
+            terminal.style.display = 'none';
+        } else {
+            terminal.style.display = 'block';
+        }
+        isTerminalVisible = !isTerminalVisible;
+    }
+
+    function maximizeTerminal() {
+        const menuBarHeight = 40;
+        if (!isMaximized) {
+            previousStyles = {
+                width: terminal.style.width,
+                height: terminal.style.height,
+                left: terminal.style.left,
+                top: terminal.style.top
+            };
+
+            const maxWidth = desktop.offsetWidth;
+            const maxHeight = desktop.offsetHeight - menuBarHeight;
+            terminal.style.width = `${maxWidth}px`;
+            terminal.style.height = `${maxHeight}px`;
+            terminal.style.left = `0px`;
+            terminal.style.top = `0px`;
+
+            isMaximized = true;
+        } else {
+            terminal.style.width = previousStyles.width;
+            terminal.style.height = previousStyles.height;
+            terminal.style.left = previousStyles.left;
+            terminal.style.top = previousStyles.top;
+
+            isMaximized = false;
+        }
+    }
+
+    function closeDesktop() {
+        desktop.style.display = 'none';
+        aboveDesktop.style.display = 'none';
+    }
+
+    terminalIcon.addEventListener('contextmenu', showContextMenu);
+
+    document.addEventListener('click', function () {
+        hideContextMenu();
+    });
+
+    _('open-terminal').addEventListener('click', function () {
+        toggleTerminalVisibility();
+        hideContextMenu();
+    });
+
+    _('maximize-terminal').addEventListener('click', function () {
+        maximizeTerminal();
+        hideContextMenu();
+    });
+
+    _('close-desktop').addEventListener('click', function () {
+        closeDesktop();
+        hideContextMenu();
+    });
+
     function scrollToBottom() {
       terminal.scrollTop = terminal.scrollHeight;
     }
@@ -47,8 +130,15 @@ window.addEventListener("load", function(evt) {
       document.body.style.msUserSelect = "";
     }
 
-    function addCursor(container) {
-        container.innerHTML += '<span class="logo-coursor"></span>';
+    function addCursor(element) {
+        const existingCursor = document.querySelector('#logo-coursor');
+        if (existingCursor) {
+            existingCursor.remove();
+        }
+        const cursorSpan = document.createElement('span');
+        cursorSpan.classList.add('logo-coursor');
+        cursorSpan.setAttribute('id', 'logo-coursor');
+        element.appendChild(cursorSpan);
     }
 
     function getRandomSpeed() {
@@ -58,14 +148,12 @@ window.addEventListener("load", function(evt) {
     async function typeWriterParagraph(text, isCommand = false) {
         let container = _("welcome-paragraph");
         for (let i = 0; i < text.length; i++) {
-            container.innerHTML = container.innerHTML.slice(0, -30);
             container.innerHTML += text.charAt(i);
             addCursor(container);
             scrollToBottom();
             await sleep(isCommand ? getRandomSpeed() : 20);
         }
         if (isCommand) {
-            container.innerHTML = container.innerHTML.slice(0, -30);
             container.innerHTML += "<br>";
             addCursor(container);
             scrollToBottom();
@@ -81,20 +169,17 @@ window.addEventListener("load", function(evt) {
         for (let elem of elements) {
             if (elem.nodeType === Node.TEXT_NODE) {
                 for (let i = 0; i < elem.textContent.length; i++) {
-                    container.innerHTML = container.innerHTML.slice(0, -30);
                     container.innerHTML += elem.textContent.charAt(i);
                     addCursor(container);
                     scrollToBottom();
                     await sleep(20);
                 }
             } else if (elem.nodeType === Node.ELEMENT_NODE) {
-                container.innerHTML = container.innerHTML.slice(0, -30);
                 container.innerHTML += elem.outerHTML;
                 addCursor(container);
                 scrollToBottom();
             }
         }
-        container.innerHTML = container.innerHTML.slice(0, -30);
         container.innerHTML += "<br>";
         addCursor(container);
         scrollToBottom();
@@ -107,29 +192,107 @@ window.addEventListener("load", function(evt) {
         await sleep(2000);
         await typeWriterParagraph(command1, true);
 
-        _("welcome-paragraph").innerHTML = _("welcome-paragraph").innerHTML.slice(0, -30);
         _("welcome-paragraph").innerHTML += prompt2;
         addCursor(_("welcome-paragraph"));
         await sleep(2000);
         await typeWriterParagraph(command2, true);
 
-        _("welcome-paragraph").innerHTML = _("welcome-paragraph").innerHTML.slice(0, -30);
         _("welcome-paragraph").innerHTML += lsOutput + "<br>";
         addCursor(_("welcome-paragraph"));
 
-        _("welcome-paragraph").innerHTML = _("welcome-paragraph").innerHTML.slice(0, -30);
         _("welcome-paragraph").innerHTML += prompt2;
         addCursor(_("welcome-paragraph"));
         await sleep(2000);
         await typeWriterParagraph(command3, true);
 
-        _("welcome-paragraph").innerHTML = _("welcome-paragraph").innerHTML.slice(0, -30);
         _("welcome-paragraph").innerHTML += prompt2;
         addCursor(_("welcome-paragraph"));
         await typeWriterHTML(messageString);
 
-        _("welcome-paragraph").innerHTML = _("welcome-paragraph").innerHTML.slice(0, -30);
         _("welcome-paragraph").innerHTML += prompt2;
+        await insertInputField();
+        addCursor(_("welcome-paragraph"));
+    }
+
+    function insertInputField() {
+        const existingInput = document.querySelector('#commandInput');
+        if (existingInput) {
+            existingInput.remove();
+        }
+
+        const inputField = document.createElement('input');
+        inputField.type = 'text';
+        inputField.id = 'commandInput';
+        inputField.classList.add('command-input');
+        inputField.autofocus = true;
+        inputField.autocomplete = false;
+
+        _("welcome-paragraph").appendChild(inputField);
+        inputField.focus();
+        addCursor(_("welcome-paragraph"));
+
+        inputField.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const command = inputField.value.trim();
+                if (command) {
+                    processCommand(command);
+                    inputField.remove();
+                    inputLength = 1;
+                }
+            } else {
+                inputLength = inputField.value.length + 2;
+                if (event.key === "Backspace" || event.key === "Delete") {
+                    if (inputLength > 2) { inputLength--; }
+                }
+                console.log(inputLength);
+                inputField.style.width = `${inputLength}ch`;
+            }
+        });
+    }
+
+    async function processCommand(command) {
+        const prompt2 = '<span class="prompt">BarrY:/home$</span>';
+        const inputField = document.querySelector('#commandInput');
+
+        if (inputField) {
+            const commandOutput = document.createElement("span");
+            commandOutput.innerHTML = ` ${command}<br>`;
+            _("welcome-paragraph").appendChild(commandOutput);
+
+            inputField.remove();
+        }
+
+        if (command === 'clear' || command === 'cls') {
+            _("welcome-paragraph").innerHTML = '';
+            _("welcome-paragraph").innerHTML += prompt2;
+            insertInputField();
+            addCursor(_("welcome-paragraph"));
+            return;
+        }
+
+        const response = await fetch('/terminal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ command: command })
+        });
+
+        if (response.ok) {
+            const result = await response.text();
+            const responseOutput = document.createElement("div");
+            responseOutput.innerHTML = result;
+            _("welcome-paragraph").appendChild(responseOutput);
+        } else {
+            const errorOutput = document.createElement("div");
+            errorOutput.innerHTML = "Błąd serwera.";
+            _("welcome-paragraph").appendChild(errorOutput);
+        }
+        const terminal = document.querySelector('.terminal');
+        terminal.scrollTop = terminal.scrollHeight;
+
+        _("welcome-paragraph").innerHTML += prompt2;
+        insertInputField();
         addCursor(_("welcome-paragraph"));
     }
 
@@ -138,8 +301,7 @@ window.addEventListener("load", function(evt) {
     if (redDot) {
         redDot.addEventListener("click", function (e) {
             console.log(e);
-            _('desktop').style.display = 'none';
-            _('above-desktop').style.display = 'none';
+            closeDesktop();
         });
     } else {
         console.error("Element z klasą 'red-dot' nie został znaleziony.");
@@ -147,17 +309,6 @@ window.addEventListener("load", function(evt) {
 
     //yellow-dot code
     const yellowDot = document.querySelector('.yellow-dot');
-    const terminalIcon = _('terminal-icon');
-    let isTerminalVisible = true;
-
-    function toggleTerminalVisibility() {
-        if (isTerminalVisible) {
-            terminal.style.display = 'none';
-        } else {
-            terminal.style.display = 'block';
-        }
-        isTerminalVisible = !isTerminalVisible;
-    }
 
     if (yellowDot) {
         yellowDot.addEventListener("click", function() {
@@ -178,48 +329,13 @@ window.addEventListener("load", function(evt) {
     //green-dot code
     const greenDot = document.querySelector('.green-dot');
     if (greenDot) {
-        let isMaximized = false;
-        let previousStyles = {};
-
         greenDot.addEventListener("click", function (e) {
-            const terminal = document.querySelector('.terminal');
-            const desktop = document.querySelector('#desktop');
-            const menuBarHeight = 40;
-
-            if (terminal && desktop) {
-                if (!isMaximized) {
-                    previousStyles = {
-                        width: terminal.style.width,
-                        height: terminal.style.height,
-                        left: terminal.style.left,
-                        top: terminal.style.top
-                    };
-
-                    const maxWidth = desktop.offsetWidth;
-                    const maxHeight = desktop.offsetHeight - menuBarHeight;
-                    terminal.style.width = `${maxWidth}px`;
-                    terminal.style.height = `${maxHeight}px`;
-                    terminal.style.left = `0px`;
-                    terminal.style.top = `0px`;
-
-                    isMaximized = true;
-                } else {
-                    terminal.style.width = previousStyles.width;
-                    terminal.style.height = previousStyles.height;
-                    terminal.style.left = previousStyles.left;
-                    terminal.style.top = previousStyles.top;
-
-                    isMaximized = false;
-                }
-            } else {
-                console.error("Elementy 'terminal' lub 'desktop' nie zostały znalezione.");
-            }
+            maximizeTerminal(); // Korzysta z tej samej funkcji co menu kontekstowe
         });
     } else {
         console.error("Element z klasą 'green-dot' nie został znaleziony.");
     }
 
-    //Window animation
     terminalHeader.addEventListener('mousedown', (e) => {
         isDragging = true;
         offsetX = e.clientX - terminal.offsetLeft;
@@ -254,23 +370,27 @@ window.addEventListener("load", function(evt) {
       });
     });
 
-    //Resizing window
+// Resizing window
     interact('.terminal').resizable({
         edges: { left: false, right: true, bottom: true, top: false },
         listeners: {
             move (event) {
                 let { x, y } = event.target.dataset;
-
                 x = (parseFloat(x) || 0) + event.deltaRect.left;
                 y = (parseFloat(y) || 0) + event.deltaRect.top;
-
                 Object.assign(event.target.style, {
                     width: `${event.rect.width}px`,
                     height: `${event.rect.height}px`,
                     transform: `translate(${x}px, ${y}px)`
                 });
-
                 Object.assign(event.target.dataset, { x, y });
+                isMaximized = false;
+                previousStyles = {
+                    width: event.target.style.width,
+                    height: event.target.style.height,
+                    left: event.target.style.left,
+                    top: event.target.style.top
+                };
             }
         }
     });

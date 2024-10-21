@@ -55,6 +55,13 @@
   display: flex;
 }
 
+.read-more-caption {
+  display: flex;
+  flex-direction: row-reverse;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
 @media (max-width: 600px) {
   .year-group h2 {
     min-width: auto;
@@ -76,5 +83,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .anchor-holder {
+    max-width: none;
   }
 }

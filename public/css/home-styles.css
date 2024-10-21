@@ -169,6 +169,40 @@ p .logo-coursor {
   cursor: pointer;
 }
 
+.context-menu {
+  display: none;
+  position: absolute;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.context-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.context-menu ul li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.context-menu ul li:hover {
+  background-color: #444;
+}
+
+.command-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 2ch;
+  margin-left: 5px;
+}
+
 @media (max-width: 600px) {
   .posts-list {
     justify-content: center;

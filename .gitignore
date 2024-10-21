@@ -8,4 +8,4 @@ db/*
 public/writeups/
 
 # Ignore thumbnails
-public/images/thumbnails
+public/images/thumbnails/*

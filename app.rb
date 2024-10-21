@@ -713,6 +713,20 @@ class MyServer < Sinatra::Base
     end
   end
 
+  post '/terminal' do
+    content_type :text
+    request_data = JSON.parse(request.body.read)
+    command = request_data['command']
+    case command
+    when 'help'
+      "Available commands: help, about, clear"
+    when 'about'
+      "This is Terminal on the BarrY's blog."
+    else
+      "Unknown command: #{command}, try \"help\"."
+    end
+  end
+
   get '/attach-image/:id' do
     if current_user.is_admin?
       @css = ["attach-image-styles"]
@@ -725,8 +739,6 @@ class MyServer < Sinatra::Base
       redirect '/error'
     end
   end
-
-  require 'securerandom'
 
   post '/attach-image/:id' do
     if current_user.is_admin?
@@ -753,7 +765,6 @@ class MyServer < Sinatra::Base
       redirect '/error'
     end
   end
-
 
   post '/autologin' do
     if current_environment == 'development'

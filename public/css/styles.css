@@ -364,7 +364,6 @@ footer {
 .post-tumbnail {
     max-height: 120px;
     width: auto;
-    aspect-ratio: 16 / 9;
     object-fit: cover;
 }
 
@@ -386,6 +385,7 @@ footer {
 
 .anchor-holder {
   width: 100%;
+    max-width: 200px;
   display: flex;
   justify-content: center;
 }

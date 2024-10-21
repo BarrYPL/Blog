@@ -14,6 +14,7 @@ require 'zip'
 require 'mime/types'
 require 'readingtime'
 require 'dotenv'
+require 'securerandom'
 require 'sinatra/reloader' if development?
 require_relative './PostFromFiles.rb'
 require_relative './GitWriteupCreator.rb'
